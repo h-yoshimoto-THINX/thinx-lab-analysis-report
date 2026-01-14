@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025年パチンコ新機種導入レポート</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --accent: #ef4444;
+            --bg: #f8fafc;
+            --card: #ffffff;
+        }
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: var(--bg);
+            color: #1e293b;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .kpi-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--primary);
+        }
+        .kpi-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .kpi-label {
+            font-size: 14px;
+            color: var(--secondary);
+            margin-top: 5px;
+        }
+        .chart-container {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #f1f5f9;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+        tr:hover {
+            background-color: #f8fafc;
+        }
+        .rank-badge {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            color: white;
+        }
+        .rank-1 { background-color: #fbbf24; }
+        .rank-2 { background-color: #94a3b8; }
+        .rank-3 { background-color: #b45309; }
+        .insight-box {
+            background: #eff6ff;
+            border-left: 5px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🎰 2025年パチンコ新機種 導入7日間 総評</h1>
+        <p>最新導入データに基づく稼働・収益パフォーマンス分析</p>
+    </header>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-value">4,100</div>
+            <div class="kpi-label">最高アウト(エヴァ17)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">56.5分</div>
+            <div class="kpi-label">最高平均遊技時間</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">17.2%</div>
+            <div class="kpi-label">全体平均勝ち率</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">スマパチLT</div>
+            <div class="kpi-label">2025年トレンド</div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <h3>📊 上位5機種のアウト（稼働）比較</h3>
+        <canvas id="outChart"></canvas>
+    </div>
+
+    <h3>🏆 総合評価ランキング (Top 10)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>順位</th>
+                <th>機種名</th>
+                <th>メーカー</th>
+                <th>アウト</th>
+                <th>遊技時間</th>
+                <th>勝ち率</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="rank-badge rank-1">1</span></td>
+                <td><strong>ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</strong></td>
+                <td>ビスティ</td>
+                <td>4,100</td>
+                <td>56.5分</td>
+                <td>18.3%</td>
+            </tr>
+            <tr>
+                <td><span class="rank-badge rank-2">2</span></td>
+                <td>ｅアズールレーンＴＨＥ　ＡＮＩＭＡＴＩＯＮ２Ｋ６</td>
+                <td>京楽</td>
+                <td>3,930</td>
+                <td>49.4分</td>
+                <td>16.7%</td>
+            </tr>
+            <tr>
+                <td><span class="rank-badge rank-3">3</span></td>
+                <td>ｅ北斗の拳１１暴凶星ＳＨＥＦ</td>
+                <td>サミー</td>
+                <td>3,560</td>
+                <td>46.4分</td>
+                <td>19.1%</td>
+            </tr>
+            <tr>
+                <td><span class="rank-badge">4</span></td>
+                <td>ｅ地獄少女７５００Ｖｅｒ．ＲＨＺ</td>
+                <td>藤商事</td>
+                <td>3,460</td>
+                <td>42.9分</td>
+                <td>12.7%</td>
+            </tr>
+            <tr>
+                <td><span class="rank-badge">5</span></td>
+                <td>Ｐジューシーハニー極嬢ＭＡ</td>
+                <td>サンセイ</td>
+                <td>2,580</td>
+                <td>37.3分</td>
+                <td>14.3%</td>
+            </tr>
+            <tr>
+                <td><span class="rank-badge">6</span></td>
+                <td>Ｐ戦国乙女７Ｌ９ＹＹ７</td>
+                <td>平和</td>
+                <td>2,420</td>
+                <td>36.2分</td>
+                <td>17.8%</td>
+            </tr>
+            <tr>
+                <td><span class="rank-badge">7</span></td>
+                <td>Ｐいくさの子戦極最強ＧＲＰＪ</td>
+                <td>サミー</td>
+                <td>1,800</td>
+                <td>22.6分</td>
+                <td>10.5%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="insight-box">
+        <h3>💡 分析総評</h3>
+        <ul>
+            <li><strong>圧倒的なエヴァ17の初動:</strong> 4,100枚というアウト数は他を圧倒しており、遊技時間も唯一の50分超えを達成。2025年もエヴァシリーズが市場の核となることが確定的な数値です。</li>
+            <li><strong>スマパチLT機の台頭:</strong> ランキング上位は「スマパチ×ラッキートリガー(LT)」が独占しています。特に北斗の拳やアズールレーンなど、爆発力の高い機種にユーザーが集中しています。</li>
+            <li><strong>稼働と勝ち率の相関:</strong> 勝ち率が20%に近い「北斗の拳11」などは、ユーザー満足度と稼働のバランスが取れており、今後も安定した貢献が見込まれます。</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('outChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['エヴァ17', 'アズールレーン2', '北斗の拳11', '地獄少女7', 'ジューシーハニー'],
+            datasets: [{
+                label: 'アウト@1人',
+                data: [4100, 3930, 3560, 3460, 2580],
+                backgroundColor: [
+                    'rgba(37, 99, 235, 0.8)',
+                    'rgba(37, 99, 235, 0.6)',
+                    'rgba(37, 99, 235, 0.5)',
+                    'rgba(37, 99, 235, 0.4)',
+                    'rgba(37, 99, 235, 0.3)'
+                ],
+                borderColor: '#2563eb',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'アウト(個)' }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
