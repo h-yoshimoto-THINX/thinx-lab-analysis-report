@@ -1,971 +1,343 @@
-<!DOCTYPE html>
+<!-- =========================
+  ✅ 追加方針
+  - 「評価設計」の直下に “アナリスト総括（2025→2026）” を追加
+  - 「パチンコ」「パチスロ」それぞれのセクション冒頭に “分析コメント + 可視化（同一フォーマット）” を追加
+  - グラフ/フローチャートは外部ライブラリ無し（SVGで内蔵）
+========================= -->
 
-<html lang="ja">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>2025年 パチンコ・パチスロ 新機種 総評（導入7日間） | THINX-LAB.</title>
+<!-- 1) <style> 内に追記（末尾にそのまま貼り付け） -->
 <style>
-    :root{
-      --bg0:#050b16;
-      --bg1:#071428;
-      --card:#0b1c35;
-      --card2:#0a1730;
-      --line:rgba(255,255,255,.10);
-      --text:#eaf2ff;
-      --muted:rgba(234,242,255,.72);
-      --muted2:rgba(234,242,255,.55);
-      --accent:#54c7ff;   /* THINX cyan */
-      --accent2:#7ae3ff;
-      --good:#5eead4;
-      --warn:#fbbf24;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", Arial, sans-serif;
-      color:var(--text);
-      background: radial-gradient(1200px 700px at 20% -10%, rgba(84,199,255,.20), transparent 55%),
-                  radial-gradient(900px 600px at 90% 10%, rgba(122,227,255,.12), transparent 55%),
-                  linear-gradient(180deg, var(--bg1), var(--bg0));
-    }
-    a{color:var(--accent)}
-    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 80px;}
-    header{position:sticky; top:0; z-index:10; backdrop-filter: blur(10px); background: linear-gradient(180deg, rgba(5,11,22,.88), rgba(5,11,22,.62)); border-bottom:1px solid var(--line);}
-    .headbar{max-width:1180px; margin:0 auto; padding:14px 18px; display:flex; align-items:center; gap:14px;}
-    .brand{display:flex; align-items:center; gap:10px; flex:1; justify-content:center;}
-    .logo{font-weight:800; letter-spacing:.10em;}
-    .logo .x{color:var(--accent)}
-    .subtitle{font-size:12px; color:var(--muted); letter-spacing:.06em;}
-    .nav{display:flex; gap:8px; align-items:center; justify-content:flex-end; min-width:280px;}
-    .nav a{text-decoration:none; font-size:12px; padding:8px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted);}
-    .nav a:hover{border-color:rgba(84,199,255,.45); color:var(--text)}
+  /* ===== ADD: Analyst Commentary Blocks ===== */
+  .insightGrid{display:grid; grid-template-columns:1.2fr .8fr; gap:14px;}
+  @media (max-width: 920px){ .insightGrid{grid-template-columns:1fr;} }
 
-    .hero{padding:28px 0 14px;}
-    .title{text-align:center;}
-    .title h1{margin:0 0 8px; font-size:28px; letter-spacing:.03em;}
-    .title p{margin:0; color:var(--muted); line-height:1.8}
-    .chips{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:16px 0 0;}
-    .chip{border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--muted); border-radius:999px; padding:8px 12px; font-size:12px;}
-    .chip b{color:var(--text)}
+  .insightTitleRow{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  .insightTitleRow h3{margin:0; font-size:16px; letter-spacing:.04em;}
+  .insightTitleRow .miniBadge{font-size:11px; padding:6px 10px; border-radius:999px; border:1px solid rgba(94,234,212,.22); color:rgba(234,242,255,.9); background:rgba(94,234,212,.06);}
 
-    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border:1px solid var(--line); border-radius:18px; padding:18px; box-shadow:0 12px 40px rgba(0,0,0,.35);}
-    .section{margin-top:26px;}
-    .section h2{margin:0 0 12px; font-size:18px; letter-spacing:.04em;}
-    .section .desc{margin:0 0 14px; color:var(--muted); line-height:1.9; font-size:13px;}
-    .grid{display:grid; grid-template-columns:1fr; gap:14px;}
-    .grid-2{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px;}
-    @media (max-width: 920px){ .grid-2{grid-template-columns:1fr;} .nav{display:none;} }
+  .insightText{color:var(--muted); line-height:1.95; font-size:13px;}
+  .insightText strong{color:var(--text); font-weight:800;}
+  .insightText .k{color:rgba(122,227,255,.92); font-weight:800;}
 
-    .scoring{padding:18px 18px 16px;}
-    .scoring .lead{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
-    .dot{width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 5px rgba(84,199,255,.15);}
-    .scoring h3{margin:0; font-size:16px;}
-    .scoring p{margin:10px 0; color:var(--muted); line-height:1.9; font-size:13px;}
-    .formula{margin-top:12px; padding:14px; border-radius:14px; border:1px solid var(--line); background:rgba(0,0,0,.18); overflow:auto;}
-    .formula code{white-space:pre; color:var(--text); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:12.5px;}
-    .note{margin-top:10px; color:var(--muted2); font-size:12px; line-height:1.9}
+  .callout{
+    margin-top:12px;
+    padding:12px 14px;
+    border-radius:14px;
+    border:1px solid rgba(84,199,255,.22);
+    background:linear-gradient(180deg, rgba(84,199,255,.10), rgba(0,0,0,.14));
+    color:rgba(234,242,255,.90);
+  }
+  .callout b{color:var(--text);}
 
-    .top10grid{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px;}
-    @media (max-width: 920px){ .top10grid{grid-template-columns:1fr;} }
+  .bullet{margin:10px 0 0; padding-left:18px;}
+  .bullet li{margin:6px 0; color:rgba(234,242,255,.82);}
 
-    .topcard{position:relative; overflow:hidden;}
-    .topcard:before{
-      content:"";
-      position:absolute; inset:-60px -80px auto auto;
-      width:240px; height:240px; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, rgba(84,199,255,.22), transparent 60%);
-      pointer-events:none;
-    }
-    .topcard__rank{display:inline-flex; align-items:center; gap:8px; font-weight:800; color:var(--accent2); letter-spacing:.06em;}
-    .topcard__title{margin:10px 0 12px; font-size:16px; line-height:1.45; word-break:break-word;}
-    .meta{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;}
-    .pill{font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:rgba(255,255,255,.03);}
-    .kpis{display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:10px;}
-    @media (max-width: 640px){ .kpis{grid-template-columns:repeat(2, minmax(0,1fr));} }
-    .kpi{border:1px solid var(--line); background:rgba(0,0,0,.16); border-radius:14px; padding:10px; min-height:62px;}
-    .kpi__label{font-size:11px; color:var(--muted2); letter-spacing:.06em;}
-    .kpi__value{margin-top:6px; font-size:14px; font-weight:750;}
-    .meta2{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;}
-    .tag{font-size:11px; padding:6px 10px; border-radius:999px; border:1px solid rgba(84,199,255,.22); color:rgba(234,242,255,.86); background:rgba(84,199,255,.06);}
+  .vizCard{border:1px solid var(--line); background:rgba(0,0,0,.16); border-radius:16px; padding:12px;}
+  .vizCard h4{margin:0 0 8px; font-size:12px; letter-spacing:.06em; color:var(--muted);}
+  .vizNote{margin-top:8px; font-size:12px; color:var(--muted2); line-height:1.8;}
 
-    table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:14px; border:1px solid var(--line);}
-    thead th{position:sticky; top:0; background:rgba(0,0,0,.28); color:var(--muted); font-weight:700; font-size:12px; text-align:left; padding:10px 10px; border-bottom:1px solid var(--line);}
-    tbody td{padding:10px 10px; font-size:12.5px; border-bottom:1px solid rgba(255,255,255,.06); color:rgba(234,242,255,.88); vertical-align:top; word-break:break-word;}
-    tbody tr:hover td{background:rgba(84,199,255,.06);}
-    .tablewrap{overflow:auto; border-radius:14px;}
-    .small{font-size:12px; color:var(--muted); line-height:1.9}
+  .vizRow{display:grid; grid-template-columns:1fr; gap:12px;}
+  .vizSvg{width:100%; height:auto; display:block;}
+  .axisLabel{font-size:11px; fill:rgba(234,242,255,.70);}
+  .barLabel{font-size:11px; fill:rgba(234,242,255,.85); font-weight:700;}
+  .flowText{font-size:12px; fill:rgba(234,242,255,.85); font-weight:700;}
+  .flowSub{font-size:11px; fill:rgba(234,242,255,.70);}
 
-    .divider{margin:34px 0 10px; height:1px; background:linear-gradient(90deg, transparent, rgba(84,199,255,.35), transparent);}
-    .sectionTitleRow{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
-    .badge{font-size:12px; padding:5px 9px; border-radius:999px; border:1px solid rgba(84,199,255,.25); color:var(--accent2); background:rgba(84,199,255,.06);}
+  .twoCol{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  @media (max-width: 920px){ .twoCol{grid-template-columns:1fr;} }
 
-    footer{margin-top:30px; color:var(--muted2); font-size:12px; line-height:1.9}
-  </style>
-</head>
-<body>
-<header>
-<div class="headbar">
-<div style="min-width:280px"></div>
-<div class="brand">
-<div class="logo">THIN<span class="x">X</span>-LAB.</div>
-</div>
-<nav class="nav">
-<a href="#pachinko">パチンコ</a>
-<a href="#pachislo">パチスロ</a>
-<a href="#method">評価設計</a>
-</nav>
-</div>
-</header>
-<main class="wrap">
-<section class="section" id="method">
-<div class="card scoring">
-<div class="lead">
-<div class="dot"></div>
-<h3>評価設計（Scoring Model）</h3>
-</div>
-<p>
-          本評価は、導入初週の“盛り上がり”を<strong>一撃（勝ち金額）だけで誤認しない</strong>ために、
-          <strong>滞在（遊技時間）</strong>と<strong>長時間層（60分以上）</strong>を重視し、
-          <strong>試し打ち離脱（15分以内）</strong>を構造リスクとして減点します。
-        </p>
-<div class="formula">
-<code>総合スコア（Z） = 0.40×Z(Rv) + 0.30×Z(遊技時間) + 0.25×Z(60分以上割合) − 0.15×Z(15分以内割合)
-総合偏差値 = 50 + 10×Z(総合スコア)</code>
-</div>
-<div class="note">
-<b>なぜ 0.40 / 0.30 / 0.25 / -0.15 なのか？</b><br/>
-          ① Rvは「勝ち体験の強さ」を代表するため主軸（0.40）。② ただしRv単独だと“勝ち金額偏重”で誤認しやすいため、滞在（遊技時間）を第二軸（0.30）。③ 初動の定着力は長時間層の厚みで効くため 60分以上を第三軸（0.25）。④ 15分以内は“試し打ち→離脱”の構造を示すため、同じ強さで持ち上げないよう減点（-0.15）。<br/>
-          ※ 重みは「初動の完成度」を捉えるための実務設計であり、目的（例：粗利最大化、回転率優先など）に応じて再調整可能です。
+  .kpiList{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; margin-top:10px;}
+  @media (max-width: 640px){ .kpiList{grid-template-columns:1fr;} }
+  .kpiItem{border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03); border-radius:14px; padding:10px;}
+  .kpiItem .l{font-size:11px; color:var(--muted2); letter-spacing:.06em;}
+  .kpiItem .v{margin-top:6px; color:rgba(234,242,255,.90); font-size:12.5px; line-height:1.75;}
+</style>
+
+
+<!-- 2) 「評価設計（Scoring Model）」の </div></section> の直後に “アナリスト総括” を挿入 -->
+<section class="section" id="analyst-summary">
+  <div class="card">
+    <div class="insightTitleRow">
+      <h3>アナリスト総括（2025年の観測 → 2026年の設計論）</h3>
+      <span class="miniBadge">初動7日間＝“話題”ではなく“構造”を見るための窓</span>
+    </div>
+
+    <p class="insightText" style="margin-top:10px">
+      2025年の新機種市場は、<strong>スペック進化が“瞬間風速”を作りやすい</strong>一方で、
+      その盛り上がりが<strong>定着（滞在）</strong>に接続するかどうかで評価が大きく二極化した年であった。
+      とくにLT/スマスロの普及が進むにつれ、<span class="k">「勝ち体験の強さ」</span>は作れても、
+      <span class="k">「納得感」</span>と<span class="k">「再着席の理由」</span>が薄い機種は、短期間で“試し打ち離脱”が増えやすい。
+      したがって本レポートは、Rv（勝ち体験）を主軸に置きながらも、遊技時間・長時間層・短時間離脱の3点で
+      <strong>初動の完成度（＝プレイヤー行動構造の安定性）</strong>を判定する設計としている。
+    </p>
+
+    <div class="twoCol" style="margin-top:12px">
+      <div class="vizCard">
+        <h4>可視化①：評価設計の重み（Scoring Weights）</h4>
+        <!-- SVG: weights -->
+        <svg class="vizSvg" viewBox="0 0 520 140" role="img" aria-label="Scoring weights chart">
+          <defs>
+            <linearGradient id="gA" x1="0" x2="1">
+              <stop offset="0" stop-color="rgba(84,199,255,.85)"/>
+              <stop offset="1" stop-color="rgba(122,227,255,.35)"/>
+            </linearGradient>
+            <linearGradient id="gB" x1="0" x2="1">
+              <stop offset="0" stop-color="rgba(94,234,212,.85)"/>
+              <stop offset="1" stop-color="rgba(94,234,212,.30)"/>
+            </linearGradient>
+            <linearGradient id="gC" x1="0" x2="1">
+              <stop offset="0" stop-color="rgba(251,191,36,.85)"/>
+              <stop offset="1" stop-color="rgba(251,191,36,.25)"/>
+            </linearGradient>
+          </defs>
+
+          <!-- frame -->
+          <rect x="8" y="10" width="504" height="120" rx="14" ry="14" fill="rgba(0,0,0,.18)" stroke="rgba(255,255,255,.10)"/>
+
+          <!-- bars: 0.40,0.30,0.25,-0.15  (scale=400px) -->
+          <text class="axisLabel" x="22" y="38">Rv（勝ち体験）</text>
+          <rect x="170" y="24" width="160" height="16" rx="8" fill="url(#gA)"/>
+          <text class="barLabel" x="338" y="37">0.40</text>
+
+          <text class="axisLabel" x="22" y="66">遊技時間（滞在）</text>
+          <rect x="170" y="52" width="120" height="16" rx="8" fill="url(#gA)"/>
+          <text class="barLabel" x="298" y="65">0.30</text>
+
+          <text class="axisLabel" x="22" y="94">60分以上（厚み）</text>
+          <rect x="170" y="80" width="100" height="16" rx="8" fill="url(#gB)"/>
+          <text class="barLabel" x="278" y="93">0.25</text>
+
+          <text class="axisLabel" x="22" y="122">15分以内（離脱）</text>
+          <!-- negative bar to left -->
+          <rect x="170" y="108" width="60" height="16" rx="8" fill="url(#gC)" opacity="0.85"/>
+          <text class="barLabel" x="238" y="121">-0.15</text>
+
+          <text class="axisLabel" x="170" y="136">※ 0.40を基準（横幅400換算）／離脱は“構造リスク”として減点</text>
+        </svg>
+        <div class="vizNote">
+          2025年は「Rvが高い＝良機」と誤認しやすい局面が増えたため、滞在と分布（60分以上・15分以内）で“体験の質”を補正する設計とした。
         </div>
-</div>
-</section>
+      </div>
 
-<section class="section" id="pachinko">
-  <div class="sectionTitleRow">
-    <h2 style="margin:0">パチンコ：TOP10（総合偏差値）</h2>
-    <span class="badge">対象：62機種（Seg1=ミドル）</span>
-  </div>
-  <p class="desc">主要項目（Rv / 遊技時間 / 60分以上 / 15分以内）を偏差値化し、総合スコアで俯瞰したランキングです。</p>
+      <div class="vizCard">
+        <h4>可視化②：初動7日間の行動構造（共通フロー）</h4>
+        <!-- SVG: flow -->
+        <svg class="vizSvg" viewBox="0 0 520 170" role="img" aria-label="Player behavior flow">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0,0 8,4 0,8" fill="rgba(84,199,255,.70)"></polygon>
+            </marker>
+          </defs>
 
-  <div class="top10grid">
-    <article class="card topcard">
-<div class="topcard__rank">#1</div>
-<h3 class="topcard__title">ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</h3>
-<div class="meta">
-<span class="pill">ビスティ</span>
-<span class="pill">スマパチＬＴミドル</span>
-<span class="pill">導入週 2025-12-22</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">74.4</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">7,599</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">56.5分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">32.68%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">15.59%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | 高射幸</span>
-<span class="tag">人数 × 粘り</span>
-<span class="tag">高単価機 | 高射幸</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#2</div>
-<h3 class="topcard__title">ｅ女神のカフェテラスＪＬＺ</h3>
-<div class="meta">
-<span class="pill">藤商事</span>
-<span class="pill">スマパチＬＴミドル高速</span>
-<span class="pill">導入週 2025-08-18</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">71.6</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">10,138</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">48.6分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">26.00%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">24.00%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | 高射幸</span>
-<span class="tag">粘り</span>
-<span class="tag">高単価機 | 高射幸</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#3</div>
-<h3 class="topcard__title">ｅ東京リベンジャーズＧＦＥＣ</h3>
-<div class="meta">
-<span class="pill">サミー</span>
-<span class="pill">スマパチＬＴミドル</span>
-<span class="pill">導入週 2025-07-07</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">64.5</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">6,702</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">49.6分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">25.87%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">18.95%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | 高射幸</span>
-<span class="tag">人数</span>
-<span class="tag">高単価機 | 高射幸</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#4</div>
-<h3 class="topcard__title">Ｐ防振りＦＨＺ</h3>
-<div class="meta">
-<span class="pill">藤商事</span>
-<span class="pill">ＬＴライトミドル</span>
-<span class="pill">導入週 2025-04-21</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">64.2</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">7,259</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">46.3分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">25.89%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">20.06%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | 高射幸</span>
-<span class="tag">外れ値</span>
-<span class="tag">高単価機 | 高射幸</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#5</div>
-<h3 class="topcard__title">ｅアズールレーンＴＨＥ　ＡＮＩＭＡＴＩＯＮ２Ｋ６</h3>
-<div class="meta">
-<span class="pill">京楽</span>
-<span class="pill">スマパチＬＴライトミドル高速</span>
-<span class="pill">導入週 2025-12-08</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">63.5</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">5,734</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">49.4分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">29.40%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">19.21%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | 高射幸</span>
-<span class="tag">粘り</span>
-<span class="tag">高単価機 | 高射幸</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#6</div>
-<h3 class="topcard__title">ｅマギアレコード魔法少女まどか☆マギカ外伝ＫＲＪ１</h3>
-<div class="meta">
-<span class="pill">京楽</span>
-<span class="pill">スマパチＬＴミドル</span>
-<span class="pill">導入週 2025-07-21</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">62.1</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">6,324</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">46.9分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">26.52%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">20.64%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | 高射幸</span>
-<span class="tag">人数</span>
-<span class="tag">高単価機 | 高射幸</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#7</div>
-<h3 class="topcard__title">ｅシャーマンキングＭＨ</h3>
-<div class="meta">
-<span class="pill">ユニバーサル</span>
-<span class="pill">スマパチＬＴミドル</span>
-<span class="pill">導入週 2025-08-04</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">61.6</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">8,212</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">39.5分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">20.62%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">18.47%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | 高射幸</span>
-<span class="tag">外れ値</span>
-<span class="tag">高単価機 | 高射幸</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#8</div>
-<h3 class="topcard__title">Ｐ桃剣鬼神ＺＣ</h3>
-<div class="meta">
-<span class="pill">ソフィア</span>
-<span class="pill">Ｐミドル高速</span>
-<span class="pill">導入週 2025-03-17</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">61.6</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">7,919</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">42.9分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">22.75%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">24.03%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち率属性型 | 高射幸</span>
-<span class="tag">外れ値</span>
-<span class="tag">高単価機 | 高射幸</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#9</div>
-<h3 class="topcard__title">ｅ北斗の拳１１暴凶星ＳＨＥＦ</h3>
-<div class="meta">
-<span class="pill">サミー</span>
-<span class="pill">スマパチＬＴミドル高速</span>
-<span class="pill">導入週 2025-12-08</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">61.0</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">6,575</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">46.4分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">23.24%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">20.12%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | 高射幸</span>
-<span class="tag">人数</span>
-<span class="tag">高単価機 | 高射幸</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#10</div>
-<h3 class="topcard__title">Ｐ戦国乙女７Ｌ９ＹＹ７</h3>
-<div class="meta">
-<span class="pill">平和</span>
-<span class="pill">ＬＴライトミドル高速</span>
-<span class="pill">導入週 2025-01-06</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">60.3</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">5,756</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">47.5分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">24.81%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">19.67%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | 高射幸</span>
-<span class="tag">粘り</span>
-<span class="tag">高単価機 | 高射幸</span>
-</div>
-</article>
-  </div>
+          <rect x="8" y="10" width="504" height="150" rx="14" fill="rgba(0,0,0,.18)" stroke="rgba(255,255,255,.10)"/>
 
-  <div class="divider"></div>
+          <!-- nodes -->
+          <rect x="26" y="48" width="115" height="44" rx="12" fill="rgba(84,199,255,.10)" stroke="rgba(84,199,255,.35)"/>
+          <text class="flowText" x="42" y="75">着席</text>
+          <text class="flowSub" x="42" y="92">入口（試し打ち）</text>
 
-  <div class="grid-2">
-    <div class="card">
-      <h3 class="cardTitle">メーカー別・総括</h3>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>メーカー</th>
-              <th class="num">機種数</th>
-              <th class="num">平均(総合偏差値)</th>
-              <th>上位3機種</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>ソフィア</td><td class='num'>1</td><td class='num'>61.6</td><td>Ｐ桃剣鬼神ＺＣ</td></tr>
-<tr><td>藤商事</td><td class='num'>5</td><td class='num'>60.7</td><td>ｅ女神のカフェテラスＪＬＺ / Ｐ防振りＦＨＺ / ｅとある魔術の禁書目録　一方通行　ＢＩＧ　ＪＫＺ</td></tr>
-<tr><td>京楽</td><td class='num'>7</td><td class='num'>53.3</td><td>ｅアズールレーンＴＨＥ　ＡＮＩＭＡＴＩＯＮ２Ｋ６ / ｅマギアレコード魔法少女まどか☆マギカ外伝ＫＲＪ１ / ｅＵＬＴＲＡＭＡＮ－Ｋ１</td></tr>
-<tr><td>ビスティ</td><td class='num'>3</td><td class='num'>52.8</td><td>ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ / ｅ東京喰種Ｗ / Ｐ宇宙戦艦ヤマト２２０２－３ＭＦ</td></tr>
-<tr><td>サミー</td><td class='num'>7</td><td class='num'>50.6</td><td>ｅ東京リベンジャーズＧＦＥＣ / ｅ北斗の拳１１暴凶星ＳＨＥＦ / ｅ真北斗無双５ＳＦＥＥ</td></tr>
-<tr><td>サンセイ</td><td class='num'>6</td><td class='num'>49.9</td><td>ｅ牙狼１２ＸＸ－ＭＪ / Ｐジューシーハニー極嬢ＭＡ / ｅ牙狼神速神撃３０００ＬＴ－ＲＢ</td></tr>
-<tr><td>SANKYO</td><td class='num'>9</td><td class='num'>49.2</td><td>ｅフィーバー炎炎ノ消防隊２ＭＳ / ｅフィーバー彼女、お借りしますＨ / ｅフィーバー戦姫絶唱シンフォギア４Ｆ</td></tr>
-<tr><td>Daiichi</td><td class='num'>3</td><td class='num'>48.8</td><td>ｅ真・一騎当千～軍神覚醒～ＡＭ－ＴＳ / ｅ犬夜叉ＬＴＭ－ＴＳ / ｅ閃乱カグラＬＴＭ－ＪＦ</td></tr>
-<tr><td>ユニバーサル</td><td class='num'>4</td><td class='num'>48.1</td><td>ｅシャーマンキングＭＨ / ｅシャーマンキングＬＢ / Ｐ愛の不時着ＭＦ</td></tr>
-<tr><td>平和</td><td class='num'>7</td><td class='num'>47.3</td><td>Ｐ戦国乙女７Ｌ９ＹＹ７ / Ｐ戦国乙女７Ｈ０ＹＺ３ / ｅガールズ＆パンツァー３ＬＡＨ１</td></tr>
-<tr><td>ニューギン</td><td class='num'>4</td><td class='num'>47.1</td><td>ｅ花の慶次～黄金の一撃Ｈ４ / ｅベルセルク無双２Ｈ３ / ｅ花の慶次～傾奇一転Ｈ６</td></tr>
-<tr><td>大都</td><td class='num'>2</td><td class='num'>46.8</td><td>ｅ／押忍番長漢の頂／Ｌ０９ / ｅ／冴えない彼女の育てかた／ＬＸ０４</td></tr>
-<tr><td>高尾</td><td class='num'>2</td><td class='num'>40.2</td><td>ｅノーゲーム・ノーライフＶ３Ｃ / Ｐクイーンズブレイド奈落Ｖ１Ｃ</td></tr>
-<tr><td>三洋</td><td class='num'>2</td><td class='num'>37.1</td><td>Ｐ清流物語４ＨＬＣ / ｅ冒険島ＥＨＬＣ２</td></tr>
-          </tbody>
-        </table>
+          <rect x="168" y="48" width="115" height="44" rx="12" fill="rgba(94,234,212,.10)" stroke="rgba(94,234,212,.35)"/>
+          <text class="flowText" x="184" y="75">滞在</text>
+          <text class="flowSub" x="184" y="92">遊技時間</text>
+
+          <rect x="310" y="48" width="115" height="44" rx="12" fill="rgba(84,199,255,.10)" stroke="rgba(84,199,255,.35)"/>
+          <text class="flowText" x="326" y="75">没入</text>
+          <text class="flowSub" x="326" y="92">60分以上</text>
+
+          <rect x="168" y="108" width="115" height="44" rx="12" fill="rgba(251,191,36,.10)" stroke="rgba(251,191,36,.35)"/>
+          <text class="flowText" x="184" y="134">離脱</text>
+          <text class="flowSub" x="184" y="151">15分以内</text>
+
+          <rect x="452" y="48" width="42" height="44" rx="12" fill="rgba(84,199,255,.12)" stroke="rgba(84,199,255,.35)"/>
+          <text class="flowText" x="460" y="75">再</text>
+          <text class="flowSub" x="458" y="92">着席</text>
+
+          <!-- arrows -->
+          <line x1="141" y1="70" x2="168" y2="70" stroke="rgba(84,199,255,.70)" stroke-width="2.2" marker-end="url(#arrow)"/>
+          <line x1="283" y1="70" x2="310" y2="70" stroke="rgba(84,199,255,.70)" stroke-width="2.2" marker-end="url(#arrow)"/>
+          <line x1="425" y1="70" x2="452" y2="70" stroke="rgba(84,199,255,.70)" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+          <!-- drop arrow -->
+          <path d="M226 92 C226 96, 226 102, 226 108" stroke="rgba(251,191,36,.70)" stroke-width="2.2" marker-end="url(#arrow)" fill="none"/>
+          <text class="axisLabel" x="26" y="30">初動で見るべきは「離脱を抑えつつ、没入を作り、再着席理由を残せたか」である</text>
+        </svg>
+        <div class="vizNote">
+          上位機は「滞在→没入」の導線が太い。下位機は「着席→離脱」が太くなり、Rvだけが高い“見かけの強さ”が起きやすい。
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <h3 class="cardTitle">属性別・総括</h3>
-
-      <h4 class="subTitle">Rv属性</h4>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>属性</th>
-              <th class="num">機種数</th>
-              <th class="num">平均(総合偏差値)</th>
-              <th>上位機種</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>勝ち金額属性型 | 高射幸</td><td class='num'>37</td><td class='num'>53.9</td><td>ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</td></tr>
-<tr><td>勝ち率属性型 | 高射幸</td><td class='num'>4</td><td class='num'>49.4</td><td>Ｐ桃剣鬼神ＺＣ</td></tr>
-<tr><td>バランス属性型 | 高射幸</td><td class='num'>1</td><td class='num'>45.2</td><td>ｅ犬夜叉ＬＴＭ－ＴＳ</td></tr>
-<tr><td>外れ値</td><td class='num'>20</td><td class='num'>43.1</td><td>ｅ真・一騎当千～軍神覚醒～ＡＭ－ＴＳ</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h4 class="subTitle" style="margin-top:14px">稼働構造属性</h4>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>属性</th>
-              <th class="num">機種数</th>
-              <th class="num">平均(総合偏差値)</th>
-              <th>上位機種</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>人数 × 粘り</td><td class='num'>1</td><td class='num'>74.4</td><td>ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</td></tr>
-<tr><td>粘り</td><td class='num'>3</td><td class='num'>65.1</td><td>ｅ女神のカフェテラスＪＬＺ</td></tr>
-<tr><td>人数</td><td class='num'>28</td><td class='num'>50.5</td><td>ｅ東京リベンジャーズＧＦＥＣ</td></tr>
-<tr><td>外れ値</td><td class='num'>30</td><td class='num'>47.2</td><td>Ｐ防振りＦＨＺ</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h4 class="subTitle" style="margin-top:14px">単価属性</h4>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>属性</th>
-              <th class="num">機種数</th>
-              <th class="num">平均(総合偏差値)</th>
-              <th>上位機種</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>高単価機 | 高射幸</td><td class='num'>52</td><td class='num'>51.0</td><td>ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</td></tr>
-<tr><td>低単価機 | 高射幸</td><td class='num'>10</td><td class='num'>44.7</td><td>ｅ真北斗無双５ＳＦＥＥ</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="callout">
+      <b>2025年の結論：</b>
+      “勝てる”だけでは足りない。プレイヤーは<strong>「当たりやすさ／勝てる感覚／演出納得」</strong>のバランスを通じて
+      <strong>「もう少し続ける理由」</strong>を作っている。よって評価は、Rvの高さに加え、<strong>滞在</strong>と<strong>分布構造</strong>で確定させるべきである。
     </div>
-  </div>
 
-  <div class="divider"></div>
-
-  <h2 style="margin:0 0 12px">完全ランキング表（パチンコ）</h2>
-  <p class="desc">総合偏差値の高い順に全機種を並べ替えています（偏差値は対象母集団内で標準化）。</p>
-
-  <div class="card">
-    <div class="tablewrap">
-      <table>
-        <thead>
-          <tr>
-            <th class="num">Rank</th>
-            <th>機種名</th>
-            <th>メーカー</th>
-            <th>導入週</th>
-            <th>Seg2</th>
-            <th>Rv属性</th>
-            <th>稼働構造属性</th>
-            <th>単価属性</th>
-            <th class="num">総合偏差値</th>
-            <th class="num">Rv偏差値</th>
-            <th class="num">遊技時間偏差値</th>
-            <th class="num">60分以上偏差値</th>
-            <th class="num">15分以内偏差値</th>
-            <th class="num">Rv</th>
-            <th class="num">遊技時間</th>
-            <th class="num">60分以上</th>
-            <th class="num">15分以内</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td class='num'>1</td><td class='machine'>ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</td><td>ビスティ</td><td>2025-12-22</td><td>スマパチＬＴミドル</td><td>勝ち金額属性型 | 高射幸</td><td>人数 × 粘り</td><td>高単価機 | 高射幸</td><td class='num'>74.4</td><td class='num'>66.8</td><td class='num'>76.3</td><td class='num'>77.7</td><td class='num'>30.8</td><td class='num'>7,599</td><td class='num'>56.5</td><td class='num'>32.68%</td><td class='num'>15.59%</td></tr>
-<tr><td class='num'>2</td><td class='machine'>ｅ女神のカフェテラスＪＬＺ</td><td>藤商事</td><td>2025-08-18</td><td>スマパチＬＴミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>粘り</td><td>高単価機 | 高射幸</td><td class='num'>71.6</td><td class='num'>83.7</td><td class='num'>64.7</td><td class='num'>64.4</td><td class='num'>49.0</td><td class='num'>10,138</td><td class='num'>48.6</td><td class='num'>26.00%</td><td class='num'>24.00%</td></tr>
-<tr><td class='num'>3</td><td class='machine'>ｅ東京リベンジャーズＧＦＥＣ</td><td>サミー</td><td>2025-07-07</td><td>スマパチＬＴミドル</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>64.5</td><td class='num'>60.8</td><td class='num'>66.2</td><td class='num'>64.1</td><td class='num'>38.1</td><td class='num'>6,702</td><td class='num'>49.6</td><td class='num'>25.87%</td><td class='num'>18.95%</td></tr>
-<tr><td class='num'>4</td><td class='machine'>Ｐ防振りＦＨＺ</td><td>藤商事</td><td>2025-04-21</td><td>ＬＴライトミドル</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>64.2</td><td class='num'>64.5</td><td class='num'>61.3</td><td class='num'>64.2</td><td class='num'>40.5</td><td class='num'>7,259</td><td class='num'>46.3</td><td class='num'>25.89%</td><td class='num'>20.06%</td></tr>
-<tr><td class='num'>5</td><td class='machine'>ｅアズールレーンＴＨＥ　ＡＮＩＭＡＴＩＯＮ２Ｋ６</td><td>京楽</td><td>2025-12-08</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>粘り</td><td>高単価機 | 高射幸</td><td class='num'>63.5</td><td class='num'>54.3</td><td class='num'>65.9</td><td class='num'>71.2</td><td class='num'>38.7</td><td class='num'>5,734</td><td class='num'>49.4</td><td class='num'>29.40%</td><td class='num'>19.21%</td></tr>
-<tr><td class='num'>6</td><td class='machine'>ｅマギアレコード魔法少女まどか☆マギカ外伝ＫＲＪ１</td><td>京楽</td><td>2025-07-21</td><td>スマパチＬＴミドル</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>62.1</td><td class='num'>58.3</td><td class='num'>62.2</td><td class='num'>65.4</td><td class='num'>41.7</td><td class='num'>6,324</td><td class='num'>46.9</td><td class='num'>26.52%</td><td class='num'>20.64%</td></tr>
-<tr><td class='num'>7</td><td class='machine'>ｅシャーマンキングＭＨ</td><td>ユニバーサル</td><td>2025-08-04</td><td>スマパチＬＴミドル</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>61.6</td><td class='num'>70.9</td><td class='num'>51.3</td><td class='num'>53.6</td><td class='num'>37.1</td><td class='num'>8,212</td><td class='num'>39.5</td><td class='num'>20.62%</td><td class='num'>18.47%</td></tr>
-<tr><td class='num'>8</td><td class='machine'>Ｐ桃剣鬼神ＺＣ</td><td>ソフィア</td><td>2025-03-17</td><td>Ｐミドル高速</td><td>勝ち率属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>61.6</td><td class='num'>68.9</td><td class='num'>56.3</td><td class='num'>57.9</td><td class='num'>49.1</td><td class='num'>7,919</td><td class='num'>42.9</td><td class='num'>22.75%</td><td class='num'>24.03%</td></tr>
-<tr><td class='num'>9</td><td class='machine'>ｅ北斗の拳１１暴凶星ＳＨＥＦ</td><td>サミー</td><td>2025-12-08</td><td>スマパチＬＴミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>61.0</td><td class='num'>59.9</td><td class='num'>61.5</td><td class='num'>58.9</td><td class='num'>40.6</td><td class='num'>6,575</td><td class='num'>46.4</td><td class='num'>23.24%</td><td class='num'>20.12%</td></tr>
-<tr><td class='num'>10</td><td class='machine'>Ｐ戦国乙女７Ｌ９ＹＹ７</td><td>平和</td><td>2025-01-06</td><td>ＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>粘り</td><td>高単価機 | 高射幸</td><td class='num'>60.3</td><td class='num'>54.5</td><td class='num'>63.1</td><td class='num'>62.0</td><td class='num'>39.7</td><td class='num'>5,756</td><td class='num'>47.5</td><td class='num'>24.81%</td><td class='num'>19.67%</td></tr>
-<tr><td class='num'>11</td><td class='machine'>ｅ真北斗無双５ＳＦＥＥ</td><td>サミー</td><td>2025-03-17</td><td>スマパチＬＴミドル</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>低単価機 | 高射幸</td><td class='num'>59.5</td><td class='num'>55.8</td><td class='num'>63.4</td><td class='num'>58.4</td><td class='num'>42.8</td><td class='num'>5,959</td><td class='num'>47.7</td><td class='num'>23.02%</td><td class='num'>21.15%</td></tr>
-<tr><td class='num'>12</td><td class='machine'>ｅとある魔術の禁書目録　一方通行　ＢＩＧ　ＪＫＺ</td><td>藤商事</td><td>2025-07-07</td><td>スマパチＬＴミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>58.3</td><td class='num'>65.2</td><td class='num'>53.7</td><td class='num'>53.5</td><td class='num'>48.3</td><td class='num'>7,361</td><td class='num'>41.1</td><td class='num'>20.57%</td><td class='num'>23.68%</td></tr>
-<tr><td class='num'>13</td><td class='machine'>ｅ牙狼１２ＸＸ－ＭＪ</td><td>サンセイ</td><td>2025-08-04</td><td>スマパチＬＴミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>57.8</td><td class='num'>59.2</td><td class='num'>54.7</td><td class='num'>55.3</td><td class='num'>40.8</td><td class='num'>6,469</td><td class='num'>41.8</td><td class='num'>21.47%</td><td class='num'>20.18%</td></tr>
-<tr><td class='num'>14</td><td class='machine'>ｅ花の慶次～黄金の一撃Ｈ４</td><td>ニューギン</td><td>2025-11-03</td><td>スマパチＬＴミドル</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>57.7</td><td class='num'>53.3</td><td class='num'>59.1</td><td class='num'>61.5</td><td class='num'>45.0</td><td class='num'>5,582</td><td class='num'>44.8</td><td class='num'>24.57%</td><td class='num'>22.16%</td></tr>
-<tr><td class='num'>15</td><td class='machine'>ｅ真・一騎当千～軍神覚醒～ＡＭ－ＴＳ</td><td>Daiichi</td><td>2025-08-04</td><td>スマパチＬＴミドル</td><td>外れ値</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>57.5</td><td class='num'>44.8</td><td class='num'>62.3</td><td class='num'>67.3</td><td class='num'>39.8</td><td class='num'>4,313</td><td class='num'>47.0</td><td class='num'>27.47%</td><td class='num'>19.73%</td></tr>
-<tr><td class='num'>16</td><td class='machine'>ｅフィーバー炎炎ノ消防隊２ＭＳ</td><td>SANKYO</td><td>2025-07-07</td><td>スマパチＬＴミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>56.9</td><td class='num'>52.6</td><td class='num'>57.1</td><td class='num'>61.3</td><td class='num'>43.8</td><td class='num'>5,482</td><td class='num'>43.4</td><td class='num'>24.47%</td><td class='num'>21.59%</td></tr>
-<tr><td class='num'>17</td><td class='machine'>ｅフィーバー彼女、お借りしますＨ</td><td>SANKYO</td><td>2025-06-02</td><td>スマパチＬＴミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>56.8</td><td class='num'>55.3</td><td class='num'>56.5</td><td class='num'>54.9</td><td class='num'>39.8</td><td class='num'>5,882</td><td class='num'>43.0</td><td class='num'>21.25%</td><td class='num'>19.74%</td></tr>
-<tr><td class='num'>18</td><td class='machine'>ｅ東京喰種Ｗ</td><td>ビスティ</td><td>2025-04-21</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>54.9</td><td class='num'>54.4</td><td class='num'>54.7</td><td class='num'>53.7</td><td class='num'>44.6</td><td class='num'>5,740</td><td class='num'>41.8</td><td class='num'>20.67%</td><td class='num'>21.98%</td></tr>
-<tr><td class='num'>19</td><td class='machine'>ｅとある科学の超電磁砲　ＬＴＲＳＹ</td><td>藤商事</td><td>2025-10-06</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>54.7</td><td class='num'>56.9</td><td class='num'>53.5</td><td class='num'>53.8</td><td class='num'>50.3</td><td class='num'>6,115</td><td class='num'>41.0</td><td class='num'>20.68%</td><td class='num'>24.61%</td></tr>
-<tr><td class='num'>20</td><td class='machine'>ｅＵＬＴＲＡＭＡＮ－Ｋ１</td><td>京楽</td><td>2025-01-06</td><td>スマパチＬＴライトミドル</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>54.5</td><td class='num'>53.9</td><td class='num'>55.6</td><td class='num'>53.7</td><td class='num'>47.8</td><td class='num'>5,670</td><td class='num'>42.4</td><td class='num'>20.64%</td><td class='num'>23.44%</td></tr>
-<tr><td class='num'>21</td><td class='machine'>ｅ地獄少女７５００Ｖｅｒ．ＲＨＺ</td><td>藤商事</td><td>2025-12-08</td><td>スマパチＬＴミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>54.5</td><td class='num'>51.6</td><td class='num'>56.3</td><td class='num'>54.3</td><td class='num'>44.3</td><td class='num'>5,326</td><td class='num'>42.9</td><td class='num'>20.95%</td><td class='num'>21.82%</td></tr>
-<tr><td class='num'>22</td><td class='machine'>ｅベルセルク無双２Ｈ３</td><td>ニューギン</td><td>2025-10-06</td><td>スマパチＬＴミドル</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>52.6</td><td class='num'>60.9</td><td class='num'>46.6</td><td class='num'>47.9</td><td class='num'>51.8</td><td class='num'>6,725</td><td class='num'>36.3</td><td class='num'>17.73%</td><td class='num'>25.29%</td></tr>
-<tr><td class='num'>23</td><td class='machine'>ｅ／押忍番長漢の頂／Ｌ０９</td><td>大都</td><td>2025-01-06</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>52.2</td><td class='num'>48.2</td><td class='num'>54.9</td><td class='num'>54.8</td><td class='num'>48.2</td><td class='num'>4,822</td><td class='num'>41.9</td><td class='num'>21.19%</td><td class='num'>23.64%</td></tr>
-<tr><td class='num'>24</td><td class='machine'>ｅフィーバー戦姫絶唱シンフォギア４Ｆ</td><td>SANKYO</td><td>2025-01-06</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>52.2</td><td class='num'>49.3</td><td class='num'>56.0</td><td class='num'>52.2</td><td class='num'>49.6</td><td class='num'>4,985</td><td class='num'>42.7</td><td class='num'>19.90%</td><td class='num'>24.27%</td></tr>
-<tr><td class='num'>25</td><td class='machine'>ｅフィーバーブルーロックＭＺ</td><td>SANKYO</td><td>2025-09-08</td><td>スマパチＬＴミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>51.6</td><td class='num'>53.8</td><td class='num'>49.6</td><td class='num'>50.5</td><td class='num'>49.4</td><td class='num'>5,653</td><td class='num'>38.3</td><td class='num'>19.07%</td><td class='num'>24.19%</td></tr>
-<tr><td class='num'>26</td><td class='machine'>ｅ蒼天の拳羅龍ＳＲＥＮ</td><td>サミー</td><td>2025-02-03</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>51.1</td><td class='num'>57.0</td><td class='num'>46.9</td><td class='num'>46.6</td><td class='num'>49.8</td><td class='num'>6,133</td><td class='num'>36.5</td><td class='num'>17.10%</td><td class='num'>24.36%</td></tr>
-<tr><td class='num'>27</td><td class='machine'>Ｐ戦国乙女７Ｈ０ＹＺ３</td><td>平和</td><td>2025-09-08</td><td>ＬＴミドル</td><td>外れ値</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>51.0</td><td class='num'>43.3</td><td class='num'>56.2</td><td class='num'>56.6</td><td class='num'>48.4</td><td class='num'>4,077</td><td class='num'>42.8</td><td class='num'>22.09%</td><td class='num'>23.72%</td></tr>
-<tr><td class='num'>28</td><td class='machine'>ｅフィーバー炎炎ノ消防隊２</td><td>SANKYO</td><td>2025-07-07</td><td>スマパチＬＴミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>50.5</td><td class='num'>49.5</td><td class='num'>47.8</td><td class='num'>50.0</td><td class='num'>41.0</td><td class='num'>5,005</td><td class='num'>37.1</td><td class='num'>18.81%</td><td class='num'>20.30%</td></tr>
-<tr><td class='num'>29</td><td class='machine'>Ｐジューシーハニー極嬢ＭＡ</td><td>サンセイ</td><td>2025-01-06</td><td>ＬＴライトミドル</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>低単価機 | 高射幸</td><td class='num'>50.2</td><td class='num'>52.1</td><td class='num'>48.1</td><td class='num'>50.0</td><td class='num'>50.8</td><td class='num'>5,406</td><td class='num'>37.3</td><td class='num'>18.80%</td><td class='num'>24.81%</td></tr>
-<tr><td class='num'>30</td><td class='machine'>Ｐ冬のソナタＭｙＭｅｍｏｒｙＭ７</td><td>京楽</td><td>2025-02-03</td><td>Ｐミドル</td><td>外れ値</td><td>外れ値</td><td>低単価機 | 高射幸</td><td class='num'>49.7</td><td class='num'>38.9</td><td class='num'>61.0</td><td class='num'>55.9</td><td class='num'>54.0</td><td class='num'>3,424</td><td class='num'>46.1</td><td class='num'>21.74%</td><td class='num'>26.30%</td></tr>
-<tr><td class='num'>31</td><td class='machine'>ｅ牙狼神速神撃３０００ＬＴ－ＲＢ</td><td>サンセイ</td><td>2025-04-07</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>49.5</td><td class='num'>49.1</td><td class='num'>52.5</td><td class='num'>47.8</td><td class='num'>52.4</td><td class='num'>4,947</td><td class='num'>40.3</td><td class='num'>17.69%</td><td class='num'>25.58%</td></tr>
-<tr><td class='num'>32</td><td class='machine'>ｅシン・ウルトラマンＫ３</td><td>京楽</td><td>2025-04-07</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>49.3</td><td class='num'>48.3</td><td class='num'>51.2</td><td class='num'>47.7</td><td class='num'>48.9</td><td class='num'>4,833</td><td class='num'>39.4</td><td class='num'>17.64%</td><td class='num'>23.94%</td></tr>
-<tr><td class='num'>33</td><td class='machine'>ｅフィーバーダンまち２Ｇ</td><td>SANKYO</td><td>2025-03-03</td><td>スマパチＬＴライトミドル高速</td><td>外れ値</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>48.9</td><td class='num'>49.7</td><td class='num'>48.4</td><td class='num'>47.8</td><td class='num'>50.0</td><td class='num'>5,045</td><td class='num'>37.5</td><td class='num'>17.71%</td><td class='num'>24.45%</td></tr>
-<tr><td class='num'>34</td><td class='machine'>Ｐ俺の妹がこんなに可愛いわけがない。Ｍ３</td><td>京楽</td><td>2025-03-03</td><td>ＬＴライトミドル</td><td>勝ち率属性型 | 高射幸</td><td>外れ値</td><td>低単価機 | 高射幸</td><td class='num'>48.2</td><td class='num'>44.2</td><td class='num'>49.6</td><td class='num'>49.0</td><td class='num'>43.9</td><td class='num'>4,211</td><td class='num'>38.3</td><td class='num'>18.31%</td><td class='num'>21.63%</td></tr>
-<tr><td class='num'>35</td><td class='machine'>ｅ聖戦士ダンバイン３ＧＲＥＡ</td><td>サミー</td><td>2025-10-06</td><td>スマパチＬＴライトミドル</td><td>外れ値</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>48.2</td><td class='num'>50.8</td><td class='num'>47.8</td><td class='num'>47.1</td><td class='num'>55.0</td><td class='num'>5,212</td><td class='num'>37.1</td><td class='num'>17.35%</td><td class='num'>26.79%</td></tr>
-<tr><td class='num'>36</td><td class='machine'>ｅパリピ孔明ＮＢ</td><td>サンセイ</td><td>2025-09-08</td><td>スマパチミドル</td><td>外れ値</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>48.2</td><td class='num'>50.1</td><td class='num'>45.5</td><td class='num'>39.6</td><td class='num'>36.0</td><td class='num'>5,103</td><td class='num'>35.5</td><td class='num'>13.60%</td><td class='num'>18.00%</td></tr>
-<tr><td class='num'>37</td><td class='machine'>ｅガールズ＆パンツァー３ＬＡＨ１</td><td>平和</td><td>2025-10-06</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>48.1</td><td class='num'>48.4</td><td class='num'>47.8</td><td class='num'>44.1</td><td class='num'>43.8</td><td class='num'>4,842</td><td class='num'>37.1</td><td class='num'>15.83%</td><td class='num'>21.58%</td></tr>
-<tr><td class='num'>38</td><td class='machine'>ＰＬＴ世界でいちばん強くなりたいＭＱ</td><td>サンセイ</td><td>2025-05-05</td><td>ＬＴライトミドル</td><td>勝ち率属性型 | 高射幸</td><td>外れ値</td><td>低単価機 | 高射幸</td><td class='num'>47.5</td><td class='num'>51.0</td><td class='num'>40.5</td><td class='num'>42.4</td><td class='num'>37.7</td><td class='num'>5,232</td><td class='num'>32.1</td><td class='num'>15.00%</td><td class='num'>18.75%</td></tr>
-<tr><td class='num'>39</td><td class='machine'>ｅバキ２ＸＡＭ２</td><td>平和</td><td>2025-06-02</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>47.3</td><td class='num'>47.6</td><td class='num'>46.8</td><td class='num'>48.7</td><td class='num'>53.1</td><td class='num'>4,724</td><td class='num'>36.4</td><td class='num'>18.16%</td><td class='num'>25.91%</td></tr>
-<tr><td class='num'>40</td><td class='machine'>ｅシャーマンキングＬＢ</td><td>ユニバーサル</td><td>2025-08-04</td><td>スマパチＬＴミドル</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>46.9</td><td class='num'>47.5</td><td class='num'>47.4</td><td class='num'>49.8</td><td class='num'>58.0</td><td class='num'>4,705</td><td class='num'>36.8</td><td class='num'>18.68%</td><td class='num'>28.16%</td></tr>
-<tr><td class='num'>41</td><td class='machine'>ＰフィーバーうたわれるものＺ</td><td>SANKYO</td><td>2025-04-07</td><td>ＬＴライトミドル高速</td><td>外れ値</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>46.6</td><td class='num'>35.0</td><td class='num'>58.4</td><td class='num'>46.5</td><td class='num'>43.6</td><td class='num'>2,846</td><td class='num'>44.3</td><td class='num'>17.06%</td><td class='num'>21.50%</td></tr>
-<tr><td class='num'>42</td><td class='machine'>ＰＬＴゴッドイーター１９９ＶＥＲ－ＡＲＢ</td><td>サンセイ</td><td>2025-10-20</td><td>ＬＴライトミドル</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>46.1</td><td class='num'>35.6</td><td class='num'>51.8</td><td class='num'>48.8</td><td class='num'>38.9</td><td class='num'>2,933</td><td class='num'>39.8</td><td class='num'>18.18%</td><td class='num'>19.32%</td></tr>
-<tr><td class='num'>43</td><td class='machine'>ｅルパン三世１４Ｌ９ＹＺ５</td><td>平和</td><td>2025-02-03</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>46.0</td><td class='num'>56.4</td><td class='num'>41.1</td><td class='num'>43.9</td><td class='num'>65.8</td><td class='num'>6,052</td><td class='num'>32.5</td><td class='num'>15.72%</td><td class='num'>31.77%</td></tr>
-<tr><td class='num'>44</td><td class='machine'>ｅ仮面ライダーＢＬＡＣＫ－ＫＲＪ２</td><td>京楽</td><td>2025-05-05</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>45.7</td><td class='num'>49.9</td><td class='num'>44.3</td><td class='num'>44.0</td><td class='num'>56.8</td><td class='num'>5,077</td><td class='num'>34.7</td><td class='num'>15.77%</td><td class='num'>27.60%</td></tr>
-<tr><td class='num'>45</td><td class='machine'>ｅ犬夜叉ＬＴＭ－ＴＳ</td><td>Daiichi</td><td>2025-07-07</td><td>スマパチＬＴライトミドル高速</td><td>バランス属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>45.2</td><td class='num'>55.1</td><td class='num'>40.2</td><td class='num'>39.7</td><td class='num'>58.7</td><td class='num'>5,850</td><td class='num'>31.9</td><td class='num'>13.64%</td><td class='num'>28.47%</td></tr>
-<tr><td class='num'>46</td><td class='machine'>ｅノーゲーム・ノーライフＶ３Ｃ</td><td>高尾</td><td>2025-11-03</td><td>スマパチＬＴライトミドル高速</td><td>外れ値</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>44.5</td><td class='num'>43.4</td><td class='num'>43.9</td><td class='num'>45.3</td><td class='num'>49.4</td><td class='num'>4,104</td><td class='num'>34.4</td><td class='num'>16.46%</td><td class='num'>24.17%</td></tr>
-<tr><td class='num'>47</td><td class='machine'>ｅ花の慶次～傾奇一転Ｈ６</td><td>ニューギン</td><td>2025-07-21</td><td>スマパチＬＴミドル</td><td>外れ値</td><td>人数</td><td>低単価機 | 高射幸</td><td class='num'>44.4</td><td class='num'>42.7</td><td class='num'>45.5</td><td class='num'>51.8</td><td class='num'>62.0</td><td class='num'>3,994</td><td class='num'>35.5</td><td class='num'>19.69%</td><td class='num'>30.00%</td></tr>
-<tr><td class='num'>48</td><td class='machine'>ｅ閃乱カグラＬＴＭ－ＪＦ</td><td>Daiichi</td><td>2025-02-03</td><td>スマパチＬＴライトミドル高速</td><td>外れ値</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>43.7</td><td class='num'>38.3</td><td class='num'>47.5</td><td class='num'>43.6</td><td class='num'>44.8</td><td class='num'>3,327</td><td class='num'>36.9</td><td class='num'>15.59%</td><td class='num'>22.04%</td></tr>
-<tr><td class='num'>49</td><td class='machine'>ＰゾンビランドサガＳＣＰＣ</td><td>サミー</td><td>2025-04-21</td><td>ＬＴライトミドル</td><td>外れ値</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>43.7</td><td class='num'>36.8</td><td class='num'>49.7</td><td class='num'>49.2</td><td class='num'>54.9</td><td class='num'>3,109</td><td class='num'>38.4</td><td class='num'>18.40%</td><td class='num'>26.74%</td></tr>
-<tr><td class='num'>50</td><td class='machine'>Ｐ愛の不時着ＭＦ</td><td>ユニバーサル</td><td>2025-02-03</td><td>Ｐミドル</td><td>外れ値</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>43.6</td><td class='num'>47.6</td><td class='num'>37.7</td><td class='num'>40.9</td><td class='num'>46.3</td><td class='num'>4,729</td><td class='num'>30.2</td><td class='num'>14.22%</td><td class='num'>22.75%</td></tr>
-<tr><td class='num'>51</td><td class='machine'>Ｐ清流物語４ＨＬＣ</td><td>三洋</td><td>2025-01-06</td><td>ＬＴライトミドル</td><td>外れ値</td><td>人数</td><td>低単価機 | 高射幸</td><td class='num'>43.6</td><td class='num'>39.3</td><td class='num'>46.2</td><td class='num'>50.8</td><td class='num'>57.8</td><td class='num'>3,480</td><td class='num'>36.0</td><td class='num'>19.21%</td><td class='num'>28.08%</td></tr>
-<tr><td class='num'>52</td><td class='machine'>Ｐフィーバー戦姫絶唱シンフォギア４Ｚ</td><td>SANKYO</td><td>2025-02-03</td><td>ＬＴライトミドル高速</td><td>外れ値</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>42.2</td><td class='num'>45.6</td><td class='num'>43.6</td><td class='num'>39.8</td><td class='num'>60.7</td><td class='num'>4,434</td><td class='num'>34.2</td><td class='num'>13.69%</td><td class='num'>29.40%</td></tr>
-<tr><td class='num'>53</td><td class='machine'>ｅ／冴えない彼女の育てかた／ＬＸ０４</td><td>大都</td><td>2025-06-02</td><td>スマパチＬＴライトミドル高速</td><td>外れ値</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>41.4</td><td class='num'>35.8</td><td class='num'>45.0</td><td class='num'>43.2</td><td class='num'>47.7</td><td class='num'>2,952</td><td class='num'>35.2</td><td class='num'>15.37%</td><td class='num'>23.39%</td></tr>
-<tr><td class='num'>54</td><td class='machine'>Ｐアナザーゴッドハーデス３ＳＢ</td><td>ユニバーサル</td><td>2025-04-07</td><td>ＬＴライトミドル</td><td>勝ち率属性型 | 高射幸</td><td>外れ値</td><td>低単価機 | 高射幸</td><td class='num'>40.4</td><td class='num'>42.4</td><td class='num'>39.7</td><td class='num'>43.7</td><td class='num'>62.4</td><td class='num'>3,945</td><td class='num'>31.6</td><td class='num'>15.63%</td><td class='num'>30.21%</td></tr>
-<tr><td class='num'>55</td><td class='machine'>ｅルパン三世ＶＳキャッツアイＭＡＨ４</td><td>平和</td><td>2025-11-03</td><td>スマパチＬＴライトミドル高速</td><td>外れ値</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>39.8</td><td class='num'>38.6</td><td class='num'>39.7</td><td class='num'>42.9</td><td class='num'>55.3</td><td class='num'>3,375</td><td class='num'>31.6</td><td class='num'>15.25%</td><td class='num'>26.91%</td></tr>
-<tr><td class='num'>56</td><td class='machine'>ｅ黄門ちゃま９ＨＣ３</td><td>平和</td><td>2025-08-04</td><td>スマパチＬＴミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>38.8</td><td class='num'>42.1</td><td class='num'>37.0</td><td class='num'>40.0</td><td class='num'>61.1</td><td class='num'>3,905</td><td class='num'>29.7</td><td class='num'>13.77%</td><td class='num'>29.62%</td></tr>
-<tr><td class='num'>57</td><td class='machine'>ｅフィーバーうたわれるものＺ</td><td>SANKYO</td><td>2025-04-07</td><td>スマパチＬＴライトミドル高速</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>37.5</td><td class='num'>44.4</td><td class='num'>34.2</td><td class='num'>33.5</td><td class='num'>59.2</td><td class='num'>4,242</td><td class='num'>27.8</td><td class='num'>10.55%</td><td class='num'>28.73%</td></tr>
-<tr><td class='num'>58</td><td class='machine'>Ｐクイーンズブレイド奈落Ｖ１Ｃ</td><td>高尾</td><td>2025-08-04</td><td>ＬＴライトミドル高速</td><td>外れ値</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>36.0</td><td class='num'>46.9</td><td class='num'>32.5</td><td class='num'>31.1</td><td class='num'>68.8</td><td class='num'>4,623</td><td class='num'>26.7</td><td class='num'>9.33%</td><td class='num'>33.16%</td></tr>
-<tr><td class='num'>59</td><td class='machine'>Ｐリングにかけろ１Ｌ５－Ｓ</td><td>ニューギン</td><td>2025-03-03</td><td>ＬＴライトミドル</td><td>外れ値</td><td>外れ値</td><td>低単価機 | 高射幸</td><td class='num'>33.9</td><td class='num'>32.7</td><td class='num'>37.4</td><td class='num'>36.9</td><td class='num'>64.2</td><td class='num'>2,489</td><td class='num'>30.0</td><td class='num'>12.26%</td><td class='num'>31.03%</td></tr>
-<tr><td class='num'>60</td><td class='machine'>ｅ冒険島ＥＨＬＣ２</td><td>三洋</td><td>2025-07-07</td><td>スマパチＬＴライトミドル</td><td>勝ち金額属性型 | 高射幸</td><td>外れ値</td><td>高単価機 | 高射幸</td><td class='num'>30.6</td><td class='num'>41.6</td><td class='num'>28.0</td><td class='num'>30.2</td><td class='num'>80.4</td><td class='num'>3,835</td><td class='num'>23.6</td><td class='num'>8.89%</td><td class='num'>38.52%</td></tr>
-<tr><td class='num'>61</td><td class='machine'>Ｐ宇宙戦艦ヤマト２２０２－３ＭＦ</td><td>ビスティ</td><td>2025-05-05</td><td>ＬＴライトミドル高速</td><td>外れ値</td><td>外れ値</td><td>低単価機 | 高射幸</td><td class='num'>29.1</td><td class='num'>32.7</td><td class='num'>29.9</td><td class='num'>29.8</td><td class='num'>69.3</td><td class='num'>2,489</td><td class='num'>24.9</td><td class='num'>8.66%</td><td class='num'>33.42%</td></tr>
-<tr><td class='num'>62</td><td class='machine'>Ｐいくさの子戦極最強ＧＲＰＪ</td><td>サミー</td><td>2025-11-03</td><td>ＬＴライトミドル高速</td><td>外れ値</td><td>人数</td><td>高単価機 | 高射幸</td><td class='num'>26.3</td><td class='num'>31.9</td><td class='num'>26.5</td><td class='num'>28.8</td><td class='num'>77.6</td><td class='num'>2,371</td><td class='num'>22.6</td><td class='num'>8.17%</td><td class='num'>37.25%</td></tr>
-        </tbody>
-      </table>
+    <div class="kpiList">
+      <div class="kpiItem">
+        <div class="l">2025年に起きた構造変化</div>
+        <div class="v">
+          ・高射幸化で初動Rvが上振れしやすい<br/>
+          ・一方で短時間離脱の“同時増加”が起きる（矛盾ではなく分布の二極化）<br/>
+          ・IP/演出が入口を作り、スペックが没入を作る（片方だけでは弱い）
+        </div>
+      </div>
+      <div class="kpiItem">
+        <div class="l">2026年に必要な視点</div>
+        <div class="v">
+          ・平均値ではなく<strong>分布（60分以上/15分以内）</strong>を優先<br/>
+          ・“勝ち金額偏重”の検知（Rv構造の歪み）<br/>
+          ・初動→2週目以降の<strong>落下率</strong>の定点観測（真の定着力）
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="section" id="pachislo">
-  <div class="sectionTitleRow">
-    <h2 style="margin:0">パチスロ：TOP10（総合偏差値）</h2>
-    <span class="badge">対象：48機種（Seg1=AT/ART）</span>
-  </div>
-  <p class="desc">主要項目（Rv / 遊技時間 / 60分以上 / 15分以内）を偏差値化し、総合スコアで俯瞰したランキングです。</p>
 
-  <div class="top10grid">
-    <article class="card topcard">
-<div class="topcard__rank">#1</div>
-<h3 class="topcard__title">Ｌ／スマスロマギアレコード／ＲＮ</h3>
-<div class="meta">
-<span class="pill">ユニバーサル</span>
-<span class="pill">スマスロ</span>
-<span class="pill">導入週 2025-4-7</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">68.9</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">8,426</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">144.0分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">67.70%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">5.75%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">バランス属性型 | AT/ART</span>
-<span class="tag">人数 × 粘り</span>
-<span class="tag">中単価機 | AT/ART</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#2</div>
-<h3 class="topcard__title">Ｌ東京喰種ＣＴ</h3>
-<div class="meta">
-<span class="pill">クロスアルファ</span>
-<span class="pill">スマスロ</span>
-<span class="pill">導入週 2025-2-3</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">63.7</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">9,736</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">107.3分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">60.17%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">5.55%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | AT/ART</span>
-<span class="tag">人数 × 粘り</span>
-<span class="tag">高単価機 | AT/ART</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#3</div>
-<h3 class="topcard__title">Ｌ　スマスロ化物語　ＫＨ</h3>
-<div class="meta">
-<span class="pill">サミー</span>
-<span class="pill">スマスロ</span>
-<span class="pill">導入週 2025-12-8</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">63.3</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">7,932</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">125.3分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">62.03%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">5.42%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">バランス属性型 | AT/ART</span>
-<span class="tag">人数 × 粘り</span>
-<span class="tag">中単価機 | AT/ART</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#4</div>
-<h3 class="topcard__title">Ｌ／ＳＨＡＭＡＮＫＩＮＧ／ＳＳ</h3>
-<div class="meta">
-<span class="pill">ユニバーサル</span>
-<span class="pill">スマスロ</span>
-<span class="pill">導入週 2025-2-3</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">63.2</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">11,071</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">98.3分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">53.59%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">6.05%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | AT/ART</span>
-<span class="tag">粘り</span>
-<span class="tag">超高単価機 | AT/ART</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#5</div>
-<h3 class="topcard__title">Ｌ銭形５Ｌ２</h3>
-<div class="meta">
-<span class="pill">平和</span>
-<span class="pill">スマスロ</span>
-<span class="pill">導入週 2025-10-6</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">62.1</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">11,778</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">85.4分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">53.37%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">7.33%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | AT/ART</span>
-<span class="tag">外れ値</span>
-<span class="tag">超高単価機 | AT/ART</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#6</div>
-<h3 class="topcard__title">Ｌデビルメイクライ５ＳＴ　ＸＡ</h3>
-<div class="meta">
-<span class="pill">エンターライズ</span>
-<span class="pill">スマスロ</span>
-<span class="pill">導入週 2025-6-2</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">61.2</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">7,976</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">113.3分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">61.66%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">5.78%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | AT/ART</span>
-<span class="tag">人数 × 粘り</span>
-<span class="tag">高単価機 | AT/ART</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#7</div>
-<h3 class="topcard__title">Ｌ無職転生～異世界行ったら本気だす～ＮＭ</h3>
-<div class="meta">
-<span class="pill">ニューギン</span>
-<span class="pill">スマスロ</span>
-<span class="pill">導入週 2025-12-22</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">59.6</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">9,490</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">99.9分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">51.82%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">5.73%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | AT/ART</span>
-<span class="tag">粘り</span>
-<span class="tag">中単価機 | AT/ART</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#8</div>
-<h3 class="topcard__title">Ｌ新鬼武者３ＳＡ</h3>
-<div class="meta">
-<span class="pill">エンターライズ</span>
-<span class="pill">スマスロ</span>
-<span class="pill">導入週 2025-10-6</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">59.4</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">8,545</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">106.1分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">56.32%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">6.73%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | AT/ART</span>
-<span class="tag">人数 × 粘り</span>
-<span class="tag">中単価機 | AT/ART</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#9</div>
-<h3 class="topcard__title">ＬスーパーブラックジャックＳＬＤＣ</h3>
-<div class="meta">
-<span class="pill">山佐</span>
-<span class="pill">スマスロ</span>
-<span class="pill">導入週 2025-2-3</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">59.2</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">8,635</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">104.8分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">57.85%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">8.73%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | AT/ART</span>
-<span class="tag">粘り</span>
-<span class="tag">中単価機 | AT/ART</span>
-</div>
-</article>
-<article class="card topcard">
-<div class="topcard__rank">#10</div>
-<h3 class="topcard__title">Ｌ／緑ドン５／ＦＹ</h3>
-<div class="meta">
-<span class="pill">ユニバーサル</span>
-<span class="pill">スマスロ</span>
-<span class="pill">導入週 2025-5-5</span>
-</div>
-<div class="kpis">
-<div class="kpi"><div class="kpi__label">総合偏差値</div><div class="kpi__value">58.6</div></div>
-<div class="kpi"><div class="kpi__label">Rv</div><div class="kpi__value">9,036</div></div>
-<div class="kpi"><div class="kpi__label">遊技時間</div><div class="kpi__value">100.0分</div></div>
-<div class="kpi"><div class="kpi__label">60分以上</div><div class="kpi__value">54.32%</div></div>
-<div class="kpi"><div class="kpi__label">15分以内</div><div class="kpi__value">7.67%</div></div>
-</div>
-<div class="meta2">
-<span class="tag">勝ち金額属性型 | AT/ART</span>
-<span class="tag">粘り</span>
-<span class="tag">中単価機 | AT/ART</span>
-</div>
-</article>
+<!-- 3) パチンコ / パチスロ それぞれのセクション冒頭（TOP10の直前あたり）に同じ形式の「分析コメント」ブロックを追加
+     ※ ここでは「#pachinko」「#pachislo」内の desc の直後に挿入する想定
+-->
+
+<!-- ===== INSERT INTO #pachinko (descの直後) ===== -->
+<div class="card" style="margin:14px 0 18px;">
+  <div class="insightTitleRow">
+    <h3>パチンコ：分析コメント（導入7日間の総括）</h3>
+    <span class="miniBadge">観測対象：62機種（Seg1=ミドル）</span>
   </div>
 
-  <div class="divider"></div>
+  <p class="insightText" style="margin-top:10px">
+    パチンコの2025年は、LT普及を背景に<strong>“勝ち体験の説明力（Rv）”が強い機種が上位に並ぶ</strong>一方で、
+    上位の中でも<strong>滞在（遊技時間）と長時間層（60分以上）</strong>の厚みに差が出た年である。
+    つまり、同じく高射幸に分類される機種同士でも、<strong>「試し打ちのまま離脱する層」</strong>を抑え込み、
+    <strong>「もう少し続ける」</strong>を作れた機種だけが、総合偏差値で抜けた。
+  </p>
 
-  <div class="grid-2">
-    <div class="card">
-      <h3 class="cardTitle">メーカー別・総括</h3>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>メーカー</th>
-              <th class="num">機種数</th>
-              <th class="num">平均(総合偏差値)</th>
-              <th>上位3機種</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>エンターライズ</td><td class='num'>3</td><td class='num'>59.5</td><td>Ｌデビルメイクライ５ＳＴ　ＸＡ / Ｌ新鬼武者３ＳＡ / Ｌバイオハザード５ＺＥ</td></tr>
-<tr><td>DAXEL</td><td class='num'>1</td><td class='num'>57.1</td><td>Ｌようこそ実力至上主義の教室へＤＥ</td></tr>
-<tr><td>カルミナ</td><td class='num'>2</td><td class='num'>55.2</td><td>ＬプリズムナナＣＣ / ＬシスタークエストＣＡ</td></tr>
-<tr><td>SANKYO</td><td class='num'>2</td><td class='num'>54.2</td><td>Ｌ革命機ヴァルヴレイヴ２ｊＦ / Ｌありふれた職業で世界最強ｊＡ</td></tr>
-<tr><td>平和</td><td class='num'>3</td><td class='num'>54.2</td><td>Ｌ銭形５Ｌ２ / Ｌ麻雀物語Ｓ２ / ＬＴｏＬＯＶＥるダークネスＳ８</td></tr>
-<tr><td>大都</td><td class='num'>3</td><td class='num'>53.9</td><td>Ｌ／いざ番長／ＳＢ８ / Ｌ／ヨシムネＳ／ＳＣ２ / Ｌ／スマスロ秘宝伝／ＰＡ７</td></tr>
-<tr><td>ニューギン</td><td class='num'>2</td><td class='num'>51.7</td><td>Ｌ無職転生～異世界行ったら本気だす～ＮＭ / Ｌスマスロサラリーマン金太郎ＥＴ</td></tr>
-<tr><td>藤商事</td><td class='num'>1</td><td class='num'>51.6</td><td>Ｌとある科学の超電磁砲２ＦＶ</td></tr>
-<tr><td>三洋</td><td class='num'>1</td><td class='num'>51.2</td><td>Ｌ咲－Ｓａｋｉ－頂上決戦ＹＲ</td></tr>
-<tr><td>山佐</td><td class='num'>3</td><td class='num'>51.1</td><td>ＬスーパーブラックジャックＳＬＤＣ / ＬパチスロアイドルマスターミリオンライブＨＣ / ＬネオプラネットＳＬＥＤ</td></tr>
-<tr><td>サミー</td><td class='num'>4</td><td class='num'>50.9</td><td>Ｌ　スマスロ化物語　ＫＨ / Ｌ　スマスロ東京リベンジャーズ　ＺＦ / Ｌ　スマスロカイジ　狂宴　ＦＪ</td></tr>
-<tr><td>ユニバーサル</td><td class='num'>6</td><td class='num'>49.7</td><td>Ｌ／スマスロマギアレコード／ＲＮ / Ｌ／ＳＨＡＭＡＮＫＩＮＧ／ＳＳ / Ｌ／緑ドン５／ＦＹ</td></tr>
-<tr><td>ビスティ</td><td class='num'>2</td><td class='num'>48.8</td><td>Ｌシン・エヴァンゲリオン / Ｌ機動戦士ガンダムＳＥＥＤ　Ｇ</td></tr>
-<tr><td>コナミ</td><td class='num'>3</td><td class='num'>47.9</td><td>Ｌ転生したら剣でしたＧＴ / Ｌわたしの幸せな結婚ＰＮ / Ｌ七つの魔剣が支配するＰＵ</td></tr>
-<tr><td>クロスアルファ</td><td class='num'>4</td><td class='num'>45.8</td><td>Ｌ東京喰種ＣＴ / ＬダーリンインザフランキスＳＡ / Ｌ荒野のコトブキ飛行隊ＳＳ</td></tr>
-<tr><td>Daiichi</td><td class='num'>2</td><td class='num'>44.4</td><td>Ｌ絶対衝撃フォースＦＨ / Ｌうしおととら白面決戦ＶＨ</td></tr>
-<tr><td>オーイズミ</td><td class='num'>1</td><td class='num'>43.2</td><td>ＬレヴュースタァライトＣＸ</td></tr>
-<tr><td>京楽</td><td class='num'>4</td><td class='num'>42.2</td><td>ＬアズールレーンＴＨＥ　ＡＮＩＭＡＴＩＯＮ　ＫＮ / ＬパチスロＵＬＴＲＡＭＡＮ－ＫＥ / Ｌにゃんこ大戦争・超神速ＫＢ</td></tr>
-<tr><td>ネット</td><td class='num'>1</td><td class='num'>34.6</td><td>Ｌチバリヨ２プラスＺＣ</td></tr>
-          </tbody>
-        </table>
+  <p class="insightText">
+    TOP層（例：総合偏差値70台）は、Rvの高さに加え、<strong>15分以内が低く、60分以上が高い</strong>という
+    <span class="k">“分布の理想形”</span>を示す。これは「入口の強さ」ではなく、
+    <strong>体験の内部設計（当たり方・見せ方・継続期待・納得感）</strong>が機能した可能性を示唆する。
+    一方で、Rvが高いにもかかわらず15分以内も高い機種は、初動の盛り上がりが
+    <strong>“当たり待ちのストレス”</strong>や<strong>“期待外れの落差”</strong>と同居している恐れがある。
+  </p>
+
+  <div class="twoCol" style="margin-top:12px">
+    <div class="vizCard">
+      <h4>可視化：パチンコの“良機プロファイル”（概念図）</h4>
+      <svg class="vizSvg" viewBox="0 0 520 170" role="img" aria-label="Pachinko profile concept">
+        <rect x="8" y="10" width="504" height="150" rx="14" fill="rgba(0,0,0,.18)" stroke="rgba(255,255,255,.10)"/>
+        <!-- axes -->
+        <line x1="70" y1="135" x2="490" y2="135" stroke="rgba(255,255,255,.12)"/>
+        <line x1="70" y1="35" x2="70" y2="135" stroke="rgba(255,255,255,.12)"/>
+        <text class="axisLabel" x="74" y="32">高</text>
+        <text class="axisLabel" x="50" y="138">低</text>
+        <text class="axisLabel" x="390" y="152">滞在/没入（遊技時間・60分以上） →</text>
+        <text class="axisLabel" x="18" y="24">↑ 勝ち体験（Rv）</text>
+
+        <!-- zones -->
+        <rect x="70" y="35" width="420" height="100" fill="rgba(84,199,255,.06)" stroke="rgba(84,199,255,.14)"/>
+        <rect x="70" y="85" width="210" height="50" fill="rgba(251,191,36,.06)" stroke="rgba(251,191,36,.14)"/>
+        <text class="axisLabel" x="86" y="60">A：Rv高いが滞在弱い（“瞬間風速”）</text>
+        <text class="axisLabel" x="300" y="60">B：Rv×滞在が両立（“定着候補”）</text>
+        <text class="axisLabel" x="86" y="115">C：離脱が厚い（15分以内↑）＝構造リスク</text>
+
+        <!-- points -->
+        <circle cx="380" cy="55" r="7" fill="rgba(94,234,212,.95)"/>
+        <text class="axisLabel" x="392" y="59">理想（B）</text>
+
+        <circle cx="170" cy="55" r="7" fill="rgba(84,199,255,.85)"/>
+        <text class="axisLabel" x="182" y="59">A</text>
+
+        <circle cx="160" cy="112" r="7" fill="rgba(251,191,36,.9)"/>
+        <text class="axisLabel" x="172" y="116">C</text>
+      </svg>
+      <div class="vizNote">
+        評価の核は「Rvの高さ」ではなく、Rvが高い状態で<strong>滞在が伸び、離脱が抑制されているか</strong>である。
       </div>
     </div>
 
-    <div class="card">
-      <h3 class="cardTitle">属性別・総括</h3>
-
-      <h4 class="subTitle">Rv属性</h4>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>属性</th>
-              <th class="num">機種数</th>
-              <th class="num">平均(総合偏差値)</th>
-              <th>上位機種</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>勝ち金額属性型 | AT/ART</td><td class='num'>15</td><td class='num'>55.2</td><td>Ｌ東京喰種ＣＴ</td></tr>
-<tr><td>バランス属性型 | AT/ART</td><td class='num'>14</td><td class='num'>52.5</td><td>Ｌ／スマスロマギアレコード／ＲＮ</td></tr>
-<tr><td>勝ち率属性型 | AT/ART</td><td class='num'>4</td><td class='num'>45.9</td><td>Ｌ　スマスロ東京リベンジャーズ　ＺＦ</td></tr>
-<tr><td>外れ値</td><td class='num'>15</td><td class='num'>43.5</td><td>Ｌバイオハザード５ＺＥ</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h4 class="subTitle" style="margin-top:14px">稼働構造属性</h4>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>属性</th>
-              <th class="num">機種数</th>
-              <th class="num">平均(総合偏差値)</th>
-              <th>上位機種</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>人数 × 粘り</td><td class='num'>6</td><td class='num'>62.4</td><td>Ｌ／スマスロマギアレコード／ＲＮ</td></tr>
-<tr><td>粘り</td><td class='num'>12</td><td class='num'>55.7</td><td>Ｌ／ＳＨＡＭＡＮＫＩＮＧ／ＳＳ</td></tr>
-<tr><td>外れ値</td><td class='num'>23</td><td class='num'>46.2</td><td>Ｌ銭形５Ｌ２</td></tr>
-<tr><td>人数</td><td class='num'>7</td><td class='num'>42.3</td><td>ＬＴｏＬＯＶＥるダークネスＳ８</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h4 class="subTitle" style="margin-top:14px">単価属性</h4>
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>属性</th>
-              <th class="num">機種数</th>
-              <th class="num">平均(総合偏差値)</th>
-              <th>上位機種</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>中単価機 | AT/ART</td><td class='num'>22</td><td class='num'>53.0</td><td>Ｌ／スマスロマギアレコード／ＲＮ</td></tr>
-<tr><td>超高単価機 | AT/ART</td><td class='num'>11</td><td class='num'>49.6</td><td>Ｌ／ＳＨＡＭＡＮＫＩＮＧ／ＳＳ</td></tr>
-<tr><td>高単価機 | AT/ART</td><td class='num'>12</td><td class='num'>47.6</td><td>Ｌ東京喰種ＣＴ</td></tr>
-<tr><td>低単価機 | AT/ART</td><td class='num'>3</td><td class='num'>39.0</td><td>Ｌ　ＤＩＳＣＵＰウルトラリミックス　ＸＲ</td></tr>
-          </tbody>
-        </table>
+    <div class="vizCard">
+      <h4>2026年に向けた観点（パチンコ）</h4>
+      <ul class="bullet">
+        <li><strong>“分布の読み”</strong>を標準化する：平均遊技時間だけでなく、60分以上と15分以内を必ずセットで見る。</li>
+        <li><strong>Rv構造の歪み検知</strong>：勝ち金額偏重でRvが立っているのか、勝率/納得感も伴うのかを区別する。</li>
+        <li><strong>2週目以降の落下率</strong>：初動で強い機種ほど“反動”が出る。落下の形（人数落ち/粘り落ち）まで分類する。</li>
+        <li><strong>ホール視点の実装</strong>：高射幸機は扱い方次第で分布が変わる。入口（着席）を作り、離脱を抑える運用設計が重要。</li>
+      </ul>
+      <div class="vizNote">
+        パチンコは“入口の強さ”を作りやすい分、2026年は<strong>離脱抑制×没入形成</strong>の設計と運用が勝負所である。
       </div>
     </div>
   </div>
+</div>
 
-  <div class="divider"></div>
 
-  <h2 style="margin:0 0 12px">完全ランキング表（パチスロ）</h2>
-  <p class="desc">総合偏差値の高い順に全機種を並べ替えています（偏差値は対象母集団内で標準化）。</p>
+<!-- ===== INSERT INTO #pachislo (descの直後) ===== -->
+<div class="card" style="margin:14px 0 18px;">
+  <div class="insightTitleRow">
+    <h3>パチスロ：分析コメント（導入7日間の総括）</h3>
+    <span class="miniBadge">観測対象：48機種（Seg1=AT/ART）</span>
+  </div>
 
-  <div class="card">
-    <div class="tablewrap">
-      <table>
-        <thead>
-          <tr>
-            <th class="num">Rank</th>
-            <th>機種名</th>
-            <th>メーカー</th>
-            <th>導入週</th>
-            <th>Seg2</th>
-            <th>Rv属性</th>
-            <th>稼働構造属性</th>
-            <th>単価属性</th>
-            <th class="num">総合偏差値</th>
-            <th class="num">Rv偏差値</th>
-            <th class="num">遊技時間偏差値</th>
-            <th class="num">60分以上偏差値</th>
-            <th class="num">15分以内偏差値</th>
-            <th class="num">Rv</th>
-            <th class="num">遊技時間</th>
-            <th class="num">60分以上</th>
-            <th class="num">15分以内</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td class='num'>1</td><td class='machine'>Ｌ／スマスロマギアレコード／ＲＮ</td><td>ユニバーサル</td><td>2025-4-7</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>人数 × 粘り</td><td>中単価機 | AT/ART</td><td class='num'>68.9</td><td class='num'>57.6</td><td class='num'>80.7</td><td class='num'>70.7</td><td class='num'>40.4</td><td class='num'>8,426</td><td class='num'>144.0</td><td class='num'>67.70%</td><td class='num'>5.75%</td></tr>
-<tr><td class='num'>2</td><td class='machine'>Ｌ東京喰種ＣＴ</td><td>クロスアルファ</td><td>2025-2-3</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>人数 × 粘り</td><td>高単価機 | AT/ART</td><td class='num'>63.7</td><td class='num'>64.8</td><td class='num'>60.9</td><td class='num'>62.2</td><td class='num'>40.0</td><td class='num'>9,736</td><td class='num'>107.3</td><td class='num'>60.17%</td><td class='num'>5.55%</td></tr>
-<tr><td class='num'>3</td><td class='machine'>Ｌ　スマスロ化物語　ＫＨ</td><td>サミー</td><td>2025-12-8</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>人数 × 粘り</td><td>中単価機 | AT/ART</td><td class='num'>63.3</td><td class='num'>54.9</td><td class='num'>70.6</td><td class='num'>64.3</td><td class='num'>39.7</td><td class='num'>7,932</td><td class='num'>125.3</td><td class='num'>62.03%</td><td class='num'>5.42%</td></tr>
-<tr><td class='num'>4</td><td class='machine'>Ｌ／ＳＨＡＭＡＮＫＩＮＧ／ＳＳ</td><td>ユニバーサル</td><td>2025-2-3</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>粘り</td><td>超高単価機 | AT/ART</td><td class='num'>63.2</td><td class='num'>72.1</td><td class='num'>56.0</td><td class='num'>54.8</td><td class='num'>41.1</td><td class='num'>11,071</td><td class='num'>98.3</td><td class='num'>53.59%</td><td class='num'>6.05%</td></tr>
-<tr><td class='num'>5</td><td class='machine'>Ｌ銭形５Ｌ２</td><td>平和</td><td>2025-10-6</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>外れ値</td><td>超高単価機 | AT/ART</td><td class='num'>62.1</td><td class='num'>76.0</td><td class='num'>49.0</td><td class='num'>54.6</td><td class='num'>44.1</td><td class='num'>11,778</td><td class='num'>85.4</td><td class='num'>53.37%</td><td class='num'>7.33%</td></tr>
-<tr><td class='num'>6</td><td class='machine'>Ｌデビルメイクライ５ＳＴ　ＸＡ</td><td>エンターライズ</td><td>2025-6-2</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>人数 × 粘り</td><td>高単価機 | AT/ART</td><td class='num'>61.2</td><td class='num'>55.2</td><td class='num'>64.1</td><td class='num'>63.9</td><td class='num'>40.5</td><td class='num'>7,976</td><td class='num'>113.3</td><td class='num'>61.66%</td><td class='num'>5.78%</td></tr>
-<tr><td class='num'>7</td><td class='machine'>Ｌ無職転生～異世界行ったら本気だす～ＮＭ</td><td>ニューギン</td><td>2025-12-22</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>粘り</td><td>中単価機 | AT/ART</td><td class='num'>59.6</td><td class='num'>63.5</td><td class='num'>56.8</td><td class='num'>52.8</td><td class='num'>40.4</td><td class='num'>9,490</td><td class='num'>99.9</td><td class='num'>51.82%</td><td class='num'>5.73%</td></tr>
-<tr><td class='num'>8</td><td class='machine'>Ｌ新鬼武者３ＳＡ</td><td>エンターライズ</td><td>2025-10-6</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>人数 × 粘り</td><td>中単価機 | AT/ART</td><td class='num'>59.4</td><td class='num'>58.3</td><td class='num'>60.2</td><td class='num'>57.9</td><td class='num'>42.7</td><td class='num'>8,545</td><td class='num'>106.1</td><td class='num'>56.32%</td><td class='num'>6.73%</td></tr>
-<tr><td class='num'>9</td><td class='machine'>ＬスーパーブラックジャックＳＬＤＣ</td><td>山佐</td><td>2025-2-3</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>粘り</td><td>中単価機 | AT/ART</td><td class='num'>59.2</td><td class='num'>58.8</td><td class='num'>59.5</td><td class='num'>59.6</td><td class='num'>47.3</td><td class='num'>8,635</td><td class='num'>104.8</td><td class='num'>57.85%</td><td class='num'>8.73%</td></tr>
-<tr><td class='num'>10</td><td class='machine'>Ｌ／緑ドン５／ＦＹ</td><td>ユニバーサル</td><td>2025-5-5</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>粘り</td><td>中単価機 | AT/ART</td><td class='num'>58.6</td><td class='num'>61.0</td><td class='num'>56.9</td><td class='num'>55.6</td><td class='num'>44.9</td><td class='num'>9,036</td><td class='num'>100.0</td><td class='num'>54.32%</td><td class='num'>7.67%</td></tr>
-<tr><td class='num'>11</td><td class='machine'>Ｌ／いざ番長／ＳＢ８</td><td>大都</td><td>2025-6-2</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>粘り</td><td>中単価機 | AT/ART</td><td class='num'>58.5</td><td class='num'>56.9</td><td class='num'>58.5</td><td class='num'>58.9</td><td class='num'>43.4</td><td class='num'>8,291</td><td class='num'>103.0</td><td class='num'>57.20%</td><td class='num'>7.01%</td></tr>
-<tr><td class='num'>12</td><td class='machine'>Ｌ革命機ヴァルヴレイヴ２ｊＦ</td><td>SANKYO</td><td>2025-11-3</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>外れ値</td><td>超高単価機 | AT/ART</td><td class='num'>58.0</td><td class='num'>63.9</td><td class='num'>50.3</td><td class='num'>54.2</td><td class='num'>41.3</td><td class='num'>9,571</td><td class='num'>87.8</td><td class='num'>53.02%</td><td class='num'>6.12%</td></tr>
-<tr><td class='num'>13</td><td class='machine'>Ｌバイオハザード５ＺＥ</td><td>エンターライズ</td><td>2025-3-3</td><td>スマスロ</td><td>外れ値</td><td>人数 × 粘り</td><td>中単価機 | AT/ART</td><td class='num'>57.8</td><td class='num'>51.9</td><td class='num'>62.7</td><td class='num'>59.9</td><td class='num'>44.8</td><td class='num'>7,375</td><td class='num'>110.7</td><td class='num'>58.09%</td><td class='num'>7.64%</td></tr>
-<tr><td class='num'>14</td><td class='machine'>Ｌようこそ実力至上主義の教室へＤＥ</td><td>DAXEL</td><td>2025-5-5</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>粘り</td><td>高単価機 | AT/ART</td><td class='num'>57.1</td><td class='num'>61.1</td><td class='num'>53.1</td><td class='num'>51.8</td><td class='num'>41.7</td><td class='num'>9,063</td><td class='num'>93.0</td><td class='num'>50.86%</td><td class='num'>6.29%</td></tr>
-<tr><td class='num'>15</td><td class='machine'>Ｌ／ヨシムネＳ／ＳＣ２</td><td>大都</td><td>2025-4-21</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>外れ値</td><td>超高単価機 | AT/ART</td><td class='num'>55.3</td><td class='num'>57.8</td><td class='num'>51.7</td><td class='num'>54.8</td><td class='num'>46.9</td><td class='num'>8,457</td><td class='num'>90.4</td><td class='num'>53.53%</td><td class='num'>8.52%</td></tr>
-<tr><td class='num'>16</td><td class='machine'>ＬプリズムナナＣＣ</td><td>カルミナ</td><td>2025-12-8</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>外れ値</td><td>超高単価機 | AT/ART</td><td class='num'>55.2</td><td class='num'>51.0</td><td class='num'>53.8</td><td class='num'>60.8</td><td class='num'>43.7</td><td class='num'>7,226</td><td class='num'>94.3</td><td class='num'>58.93%</td><td class='num'>7.14%</td></tr>
-<tr><td class='num'>17</td><td class='machine'>ＬシスタークエストＣＡ</td><td>カルミナ</td><td>2025-3-3</td><td>スマスロ</td><td>外れ値</td><td>粘り</td><td>高単価機 | AT/ART</td><td class='num'>55.2</td><td class='num'>47.6</td><td class='num'>58.5</td><td class='num'>60.2</td><td class='num'>43.3</td><td class='num'>6,601</td><td class='num'>103.0</td><td class='num'>58.39%</td><td class='num'>6.97%</td></tr>
-<tr><td class='num'>18</td><td class='machine'>Ｌ麻雀物語Ｓ２</td><td>平和</td><td>2025-4-21</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>外れ値</td><td>中単価機 | AT/ART</td><td class='num'>54.3</td><td class='num'>59.2</td><td class='num'>49.0</td><td class='num'>53.3</td><td class='num'>49.7</td><td class='num'>8,721</td><td class='num'>85.5</td><td class='num'>52.22%</td><td class='num'>9.76%</td></tr>
-<tr><td class='num'>19</td><td class='machine'>ＬアズールレーンＴＨＥ　ＡＮＩＭＡＴＩＯＮ　ＫＮ</td><td>京楽</td><td>2025-8-4</td><td>スマスロ</td><td>外れ値</td><td>粘り</td><td>高単価機 | AT/ART</td><td class='num'>52.0</td><td class='num'>46.9</td><td class='num'>58.1</td><td class='num'>51.0</td><td class='num'>46.7</td><td class='num'>6,475</td><td class='num'>102.2</td><td class='num'>50.21%</td><td class='num'>8.44%</td></tr>
-<tr><td class='num'>20</td><td class='machine'>Ｌとある科学の超電磁砲２ＦＶ</td><td>藤商事</td><td>2025-11-3</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>粘り</td><td>中単価機 | AT/ART</td><td class='num'>51.6</td><td class='num'>44.3</td><td class='num'>55.7</td><td class='num'>59.9</td><td class='num'>51.8</td><td class='num'>6,001</td><td class='num'>97.8</td><td class='num'>58.08%</td><td class='num'>10.65%</td></tr>
-<tr><td class='num'>21</td><td class='machine'>Ｌ　スマスロ東京リベンジャーズ　ＺＦ</td><td>サミー</td><td>2025-9-8</td><td>スマスロ</td><td>勝ち率属性型 | AT/ART</td><td>粘り</td><td>中単価機 | AT/ART</td><td class='num'>51.4</td><td class='num'>46.8</td><td class='num'>54.0</td><td class='num'>53.0</td><td class='num'>45.3</td><td class='num'>6,445</td><td class='num'>94.6</td><td class='num'>51.96%</td><td class='num'>7.84%</td></tr>
-<tr><td class='num'>22</td><td class='machine'>Ｌ咲－Ｓａｋｉ－頂上決戦ＹＲ</td><td>三洋</td><td>2025-8-4</td><td>スマスロ</td><td>外れ値</td><td>粘り</td><td>中単価機 | AT/ART</td><td class='num'>51.2</td><td class='num'>41.2</td><td class='num'>55.7</td><td class='num'>60.6</td><td class='num'>47.4</td><td class='num'>5,434</td><td class='num'>97.7</td><td class='num'>58.76%</td><td class='num'>8.76%</td></tr>
-<tr><td class='num'>23</td><td class='machine'>Ｌシン・エヴァンゲリオン</td><td>ビスティ</td><td>2025-1-20</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>外れ値</td><td>中単価機 | AT/ART</td><td class='num'>50.8</td><td class='num'>47.4</td><td class='num'>52.0</td><td class='num'>54.5</td><td class='num'>49.1</td><td class='num'>6,563</td><td class='num'>91.0</td><td class='num'>53.27%</td><td class='num'>9.50%</td></tr>
-<tr><td class='num'>24</td><td class='machine'>Ｌ／ギルティクラウン２／ＸＦ</td><td>ユニバーサル</td><td>2025-6-2</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>粘り</td><td>中単価機 | AT/ART</td><td class='num'>50.6</td><td class='num'>44.5</td><td class='num'>55.0</td><td class='num'>54.9</td><td class='num'>49.0</td><td class='num'>6,034</td><td class='num'>96.4</td><td class='num'>53.63%</td><td class='num'>9.46%</td></tr>
-<tr><td class='num'>25</td><td class='machine'>ＬダーリンインザフランキスＳＡ</td><td>クロスアルファ</td><td>2025-8-4</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>外れ値</td><td>超高単価機 | AT/ART</td><td class='num'>50.4</td><td class='num'>54.7</td><td class='num'>47.6</td><td class='num'>46.9</td><td class='num'>49.6</td><td class='num'>7,885</td><td class='num'>82.9</td><td class='num'>46.53%</td><td class='num'>9.71%</td></tr>
-<tr><td class='num'>26</td><td class='machine'>Ｌありふれた職業で世界最強ｊＡ</td><td>SANKYO</td><td>2025-2-3</td><td>スマスロ</td><td>外れ値</td><td>外れ値</td><td>中単価機 | AT/ART</td><td class='num'>50.4</td><td class='num'>49.2</td><td class='num'>49.1</td><td class='num'>52.8</td><td class='num'>47.9</td><td class='num'>6,882</td><td class='num'>85.6</td><td class='num'>51.76%</td><td class='num'>8.98%</td></tr>
-<tr><td class='num'>27</td><td class='machine'>Ｌ転生したら剣でしたＧＴ</td><td>コナミ</td><td>2025-8-4</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>外れ値</td><td>中単価機 | AT/ART</td><td class='num'>50.3</td><td class='num'>53.9</td><td class='num'>48.7</td><td class='num'>51.0</td><td class='num'>57.4</td><td class='num'>7,751</td><td class='num'>84.8</td><td class='num'>50.22%</td><td class='num'>13.05%</td></tr>
-<tr><td class='num'>28</td><td class='machine'>ＬパチスロアイドルマスターミリオンライブＨＣ</td><td>山佐</td><td>2025-4-21</td><td>スマスロ</td><td>外れ値</td><td>外れ値</td><td>高単価機 | AT/ART</td><td class='num'>49.4</td><td class='num'>46.2</td><td class='num'>51.3</td><td class='num'>48.8</td><td class='num'>44.7</td><td class='num'>6,344</td><td class='num'>89.7</td><td class='num'>48.22%</td><td class='num'>7.60%</td></tr>
-<tr><td class='num'>29</td><td class='machine'>Ｌ／スマスロ秘宝伝／ＰＡ７</td><td>大都</td><td>2025-12-22</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>外れ値</td><td>中単価機 | AT/ART</td><td class='num'>47.7</td><td class='num'>45.9</td><td class='num'>47.9</td><td class='num'>48.7</td><td class='num'>47.7</td><td class='num'>6,284</td><td class='num'>83.3</td><td class='num'>48.16%</td><td class='num'>8.89%</td></tr>
-<tr><td class='num'>30</td><td class='machine'>Ｌわたしの幸せな結婚ＰＮ</td><td>コナミ</td><td>2025-7-7</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>外れ値</td><td>中単価機 | AT/ART</td><td class='num'>47.4</td><td class='num'>47.1</td><td class='num'>44.8</td><td class='num'>48.2</td><td class='num'>45.9</td><td class='num'>6,509</td><td class='num'>77.6</td><td class='num'>47.66%</td><td class='num'>8.10%</td></tr>
-<tr><td class='num'>31</td><td class='machine'>Ｌ機動戦士ガンダムＳＥＥＤ　Ｇ</td><td>ビスティ</td><td>2025-5-5</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>外れ値</td><td>超高単価機 | AT/ART</td><td class='num'>46.8</td><td class='num'>52.2</td><td class='num'>44.4</td><td class='num'>46.6</td><td class='num'>60.6</td><td class='num'>7,443</td><td class='num'>77.0</td><td class='num'>46.27%</td><td class='num'>14.43%</td></tr>
-<tr><td class='num'>32</td><td class='machine'>ＬＴｏＬＯＶＥるダークネスＳ８</td><td>平和</td><td>2025-5-19</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>人数</td><td>超高単価機 | AT/ART</td><td class='num'>46.2</td><td class='num'>55.5</td><td class='num'>39.0</td><td class='num'>36.5</td><td class='num'>45.5</td><td class='num'>8,032</td><td class='num'>66.9</td><td class='num'>37.24%</td><td class='num'>7.92%</td></tr>
-<tr><td class='num'>33</td><td class='machine'>Ｌ七つの魔剣が支配するＰＵ</td><td>コナミ</td><td>2025-1-20</td><td>スマスロ</td><td>外れ値</td><td>人数</td><td>中単価機 | AT/ART</td><td class='num'>45.9</td><td class='num'>37.3</td><td class='num'>48.5</td><td class='num'>52.4</td><td class='num'>44.1</td><td class='num'>4,714</td><td class='num'>84.4</td><td class='num'>51.47%</td><td class='num'>7.35%</td></tr>
-<tr><td class='num'>34</td><td class='machine'>Ｌ絶対衝撃フォースＦＨ</td><td>Daiichi</td><td>2025-11-3</td><td>スマスロ</td><td>外れ値</td><td>外れ値</td><td>高単価機 | AT/ART</td><td class='num'>45.6</td><td class='num'>34.8</td><td class='num'>50.9</td><td class='num'>52.5</td><td class='num'>44.8</td><td class='num'>4,263</td><td class='num'>88.9</td><td class='num'>51.53%</td><td class='num'>7.65%</td></tr>
-<tr><td class='num'>35</td><td class='machine'>Ｌ　スマスロカイジ　狂宴　ＦＪ</td><td>サミー</td><td>2025-3-3</td><td>スマスロ</td><td>勝ち率属性型 | AT/ART</td><td>人数</td><td>中単価機 | AT/ART</td><td class='num'>45.5</td><td class='num'>43.7</td><td class='num'>45.9</td><td class='num'>46.0</td><td class='num'>48.2</td><td class='num'>5,889</td><td class='num'>79.7</td><td class='num'>45.73%</td><td class='num'>9.11%</td></tr>
-<tr><td class='num'>36</td><td class='machine'>ＬネオプラネットＳＬＥＤ</td><td>山佐</td><td>2025-11-17</td><td>スマスロ</td><td>外れ値</td><td>外れ値</td><td>中単価機 | AT/ART</td><td class='num'>44.9</td><td class='num'>45.2</td><td class='num'>46.2</td><td class='num'>46.8</td><td class='num'>58.4</td><td class='num'>6,170</td><td class='num'>80.3</td><td class='num'>46.45%</td><td class='num'>13.48%</td></tr>
-<tr><td class='num'>37</td><td class='machine'>Ｌスマスロサラリーマン金太郎ＥＴ</td><td>ニューギン</td><td>2025-1-6</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>人数</td><td>高単価機 | AT/ART</td><td class='num'>43.7</td><td class='num'>47.2</td><td class='num'>45.6</td><td class='num'>38.9</td><td class='num'>57.0</td><td class='num'>6,522</td><td class='num'>79.1</td><td class='num'>39.39%</td><td class='num'>12.88%</td></tr>
-<tr><td class='num'>38</td><td class='machine'>Ｌ　ＤＩＳＣＵＰウルトラリミックス　ＸＲ</td><td>サミー</td><td>2025-1-20</td><td>スマスロ</td><td>勝ち率属性型 | AT/ART</td><td>人数</td><td>低単価機 | AT/ART</td><td class='num'>43.6</td><td class='num'>44.4</td><td class='num'>42.0</td><td class='num'>44.6</td><td class='num'>52.5</td><td class='num'>6,013</td><td class='num'>72.5</td><td class='num'>44.52%</td><td class='num'>10.96%</td></tr>
-<tr><td class='num'>39</td><td class='machine'>Ｌうしおととら白面決戦ＶＨ</td><td>Daiichi</td><td>2025-4-7</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>外れ値</td><td>超高単価機 | AT/ART</td><td class='num'>43.2</td><td class='num'>48.9</td><td class='num'>39.1</td><td class='num'>39.9</td><td class='num'>53.6</td><td class='num'>6,838</td><td class='num'>67.1</td><td class='num'>40.32%</td><td class='num'>11.43%</td></tr>
-<tr><td class='num'>40</td><td class='machine'>ＬレヴュースタァライトＣＸ</td><td>オーイズミ</td><td>2025-3-3</td><td>スマスロ</td><td>勝ち率属性型 | AT/ART</td><td>外れ値</td><td>低単価機 | AT/ART</td><td class='num'>43.2</td><td class='num'>38.4</td><td class='num'>44.3</td><td class='num'>46.8</td><td class='num'>47.8</td><td class='num'>4,919</td><td class='num'>76.8</td><td class='num'>46.43%</td><td class='num'>8.93%</td></tr>
-<tr><td class='num'>41</td><td class='machine'>ＬパチスロＵＬＴＲＡＭＡＮ－ＫＥ</td><td>京楽</td><td>2025-6-2</td><td>スマスロ</td><td>バランス属性型 | AT/ART</td><td>外れ値</td><td>高単価機 | AT/ART</td><td class='num'>42.2</td><td class='num'>43.6</td><td class='num'>38.5</td><td class='num'>41.9</td><td class='num'>48.5</td><td class='num'>5,864</td><td class='num'>66.1</td><td class='num'>42.11%</td><td class='num'>9.21%</td></tr>
-<tr><td class='num'>42</td><td class='machine'>Ｌにゃんこ大戦争・超神速ＫＢ</td><td>京楽</td><td>2025-1-20</td><td>スマスロ</td><td>外れ値</td><td>人数</td><td>高単価機 | AT/ART</td><td class='num'>40.8</td><td class='num'>45.2</td><td class='num'>37.3</td><td class='num'>37.8</td><td class='num'>52.9</td><td class='num'>6,155</td><td class='num'>63.8</td><td class='num'>38.38%</td><td class='num'>11.11%</td></tr>
-<tr><td class='num'>43</td><td class='machine'>Ｌ荒野のコトブキ飛行隊ＳＳ</td><td>クロスアルファ</td><td>2025-10-20</td><td>スマスロ</td><td>外れ値</td><td>外れ値</td><td>中単価機 | AT/ART</td><td class='num'>38.7</td><td class='num'>39.5</td><td class='num'>40.4</td><td class='num'>37.2</td><td class='num'>57.2</td><td class='num'>5,131</td><td class='num'>69.5</td><td class='num'>37.88%</td><td class='num'>12.97%</td></tr>
-<tr><td class='num'>44</td><td class='machine'>Ｌチバリヨ２プラスＺＣ</td><td>ネット</td><td>2025-1-6</td><td>スマスロ</td><td>勝ち金額属性型 | AT/ART</td><td>外れ値</td><td>超高単価機 | AT/ART</td><td class='num'>34.6</td><td class='num'>47.6</td><td class='num'>33.3</td><td class='num'>26.5</td><td class='num'>73.9</td><td class='num'>6,597</td><td class='num'>56.5</td><td class='num'>28.38%</td><td class='num'>20.18%</td></tr>
-<tr><td class='num'>45</td><td class='machine'>Ｌ仮面ライダー電王ＵＤ</td><td>京楽</td><td>2025-3-3</td><td>スマスロ</td><td>外れ値</td><td>外れ値</td><td>高単価機 | AT/ART</td><td class='num'>34.1</td><td class='num'>43.1</td><td class='num'>33.0</td><td class='num'>33.2</td><td class='num'>75.7</td><td class='num'>5,777</td><td class='num'>55.8</td><td class='num'>34.29%</td><td class='num'>20.95%</td></tr>
-<tr><td class='num'>46</td><td class='machine'>Ｌ／オキドキデュオ２／ＦＲ</td><td>ユニバーサル</td><td>2025-12-22</td><td>スマスロ</td><td>外れ値</td><td>外れ値</td><td>超高単価機 | AT/ART</td><td class='num'>31.1</td><td class='num'>41.1</td><td class='num'>33.7</td><td class='num'>29.0</td><td class='num'>84.8</td><td class='num'>5,408</td><td class='num'>57.1</td><td class='num'>30.61%</td><td class='num'>24.90%</td></tr>
-<tr><td class='num'>47</td><td class='machine'>Ｌ絶対衝激ＴＫ</td><td>クロスアルファ</td><td>2025-6-16</td><td>スマスロ</td><td>外れ値</td><td>人数</td><td>低単価機 | AT/ART</td><td class='num'>30.2</td><td class='num'>26.5</td><td class='num'>35.1</td><td class='num'>31.8</td><td class='num'>59.4</td><td class='num'>2,750</td><td class='num'>59.8</td><td class='num'>33.11%</td><td class='num'>13.91%</td></tr>
-<tr><td class='num'>48</td><td class='machine'>Ｌ／バベル／ＢＡ</td><td>ユニバーサル</td><td>2025-10-6</td><td>スマスロ</td><td>外れ値</td><td>外れ値</td><td>高単価機 | AT/ART</td><td class='num'>25.9</td><td class='num'>26.3</td><td class='num'>30.6</td><td class='num'>30.9</td><td class='num'>76.9</td><td class='num'>2,723</td><td class='num'>51.5</td><td class='num'>32.23%</td><td class='num'>21.49%</td></tr>
-        </tbody>
-      </table>
+  <p class="insightText" style="margin-top:10px">
+    2025年のパチスロは、スマスロ市場が成熟局面へ移行し、<strong>“長時間滞在の作り方”がテンプレ化</strong>してきた年である。
+    その結果、上位機は遊技時間・60分以上が高水準で並ぶが、勝負を分けたのは
+    <span class="k">「短時間離脱の低さ」</span>と<span class="k">「Rvの質（上振れではなく安定）」</span>であった。
+  </p>
+
+  <p class="insightText">
+    スロットはパチンコよりも滞在が伸びやすい構造を持つ一方で、<strong>入口の段差（初当たり体験）</strong>が不親切だと、
+    15分以内は小さく見えても<strong>“初期離脱の連鎖”</strong>が起き、稼働の回転が細る。
+    したがって2026年に向けては、Rv/遊技時間が高いこと自体よりも、<strong>「初期成功体験の設計」</strong>と
+    <strong>「負けの納得感（演出/示唆/学習線）」</strong>が重要になる。
+  </p>
+
+  <div class="twoCol" style="margin-top:12px">
+    <div class="vizCard">
+      <h4>可視化：パチスロの“良機プロファイル”（概念図）</h4>
+      <svg class="vizSvg" viewBox="0 0 520 170" role="img" aria-label="Pachislot profile concept">
+        <rect x="8" y="10" width="504" height="150" rx="14" fill="rgba(0,0,0,.18)" stroke="rgba(255,255,255,.10)"/>
+        <!-- axes -->
+        <line x1="70" y1="135" x2="490" y2="135" stroke="rgba(255,255,255,.12)"/>
+        <line x1="70" y1="35" x2="70" y2="135" stroke="rgba(255,255,255,.12)"/>
+        <text class="axisLabel" x="74" y="32">高</text>
+        <text class="axisLabel" x="50" y="138">低</text>
+        <text class="axisLabel" x="390" y="152">滞在/没入（遊技時間・60分以上） →</text>
+        <text class="axisLabel" x="18" y="24">↑ 勝ち体験（Rv）</text>
+
+        <!-- zones -->
+        <rect x="70" y="35" width="420" height="100" fill="rgba(84,199,255,.06)" stroke="rgba(84,199,255,.14)"/>
+        <rect x="70" y="85" width="210" height="50" fill="rgba(251,191,36,.06)" stroke="rgba(251,191,36,.14)"/>
+        <text class="axisLabel" x="86" y="60">A：滞在は強いがRv弱い（“作業化”）</text>
+        <text class="axisLabel" x="300" y="60">B：滞在×Rvが両立（“中核候補”）</text>
+        <text class="axisLabel" x="86" y="115">C：初期離脱の芽（入口段差）</text>
+
+        <!-- points -->
+        <circle cx="390" cy="55" r="7" fill="rgba(94,234,212,.95)"/>
+        <text class="axisLabel" x="402" y="59">理想（B）</text>
+
+        <circle cx="380" cy="95" r="7" fill="rgba(84,199,255,.85)"/>
+        <text class="axisLabel" x="392" y="99">A</text>
+
+        <circle cx="160" cy="112" r="7" fill="rgba(251,191,36,.9)"/>
+        <text class="axisLabel" x="172" y="116">C</text>
+      </svg>
+      <div class="vizNote">
+        スロットは滞在を作れても<strong>体験が“作業化”</strong>するとRvが伴わず、長期稼働の芯になりにくい。
+      </div>
+    </div>
+
+    <div class="vizCard">
+      <h4>2026年に向けた観点（パチスロ）</h4>
+      <ul class="bullet">
+        <li><strong>入口段差の定量化</strong>：15分以内が小さくても“初期離脱の芽”がある。初当たり体験の設計を評価に組み込む。</li>
+        <li><strong>滞在の質</strong>：長時間比率が高いだけでは足りない。中身が「追いかけ」か「納得」かを見分ける。</li>
+        <li><strong>Rvの安定性</strong>：一撃上振れではなく、勝ち体験が“再現性”を持つか（分散の大きさに注意）。</li>
+        <li><strong>カテゴリ最適の再設計</strong>：中単価帯は“バランス”、超高単価帯は“尖り”が許容される。評価軸を分けて誤認を防ぐ。</li>
+      </ul>
+      <div class="vizNote">
+        2026年は「長く打たれる」だけでなく、<strong>“打ち続けたくなる理由の設計”</strong>が評価の本丸になる。
+      </div>
     </div>
   </div>
-</section>
-</main>
-</body>
-</html>
+</div>
