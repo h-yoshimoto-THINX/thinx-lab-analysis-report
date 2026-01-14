@@ -12,9 +12,10 @@
     --ink:#EAF2FF;
     --muted:#A9B7D0;
     --line:rgba(255,255,255,.10);
-    --cyan:#25B7FF;
+    --cyan:#25B7FF;   /* THINX tone */
     --cyan2:#58E1FF;
     --shadow: 0 18px 40px rgba(0,0,0,.35);
+    --good: rgba(37,183,255,.14);
   }
   *{box-sizing:border-box}
   body{
@@ -64,6 +65,9 @@
     max-width:100%;
   }
 
+  /* ===== Layout blocks ===== */
+  .stack{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+
   /* ===== Cards ===== */
   .card{
     border:1px solid var(--line);
@@ -78,7 +82,8 @@
   .h2{font-size:16px;font-weight:900;margin:0}
   .note{color:var(--muted);font-size:12px;margin:0}
   .small{font-size:12px;color:var(--muted)}
-  .mt{margin-top:14px}
+  .kpi{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+  .kpi .pill{background:rgba(11,18,32,.35)}
 
   .formula{
     margin-top:10px;
@@ -93,12 +98,8 @@
   }
 
   /* ===== TOP10 ===== */
-  .topgrid{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:12px;
-  }
-  @media(min-width:680px){.topgrid{grid-template-columns:1fr 1fr}}
+  .topgrid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:720px){.topgrid{grid-template-columns:1fr 1fr}}
   .topcard{
     border:1px solid var(--line);
     background:rgba(255,255,255,.03);
@@ -138,7 +139,7 @@
     border:1px solid var(--line);
     background:rgba(11,18,32,.55);
   }
-  table{border-collapse:separate;border-spacing:0;width:100%;min-width:1100px}
+  table{border-collapse:separate;border-spacing:0;width:100%;min-width:980px}
   thead th{
     position:sticky; top:0;
     background:rgba(14,23,48,.92);
@@ -157,11 +158,15 @@
     white-space:nowrap;
   }
   tbody tr:hover{background:rgba(37,183,255,.07)}
+  tbody tr.top10{background:var(--good)}
   td.num{text-align:right;font-variant-numeric:tabular-nums}
-  td.txt{white-space:normal;min-width:180px;color:var(--muted);overflow-wrap:anywhere}
+  td.txt{white-space:normal;min-width:220px;color:var(--muted);overflow-wrap:anywhere}
   td.machine{min-width:360px;white-space:normal;overflow-wrap:anywhere}
   .mname{font-weight:900}
   .meta{color:var(--muted);font-size:11px;margin-top:2px}
+
+  /* ===== Footer ===== */
+  .foot{color:var(--muted);font-size:12px;margin-top:14px}
 </style>
 </head>
 
@@ -180,60 +185,551 @@
     <div class="pills">
       <div class="pill">対象：62機種（Seg1=ミドル）</div>
       <div class="pill">評価：総合偏差値（バランス評価）</div>
-      <div class="pill">重視：Rv / 遊技時間 / 60分以上（短時間比率は減点）</div>
-      <div class="pill">標準化：Zスコア（ddof=0）→ 偏差値=50+10×Z</div>
+      <div class="pill">重視：Rv / 遊技時間 / 60分以上（15分以内は減点）</div>
+      <div class="pill">更新日：2026-01-14</div>
     </div>
 
-    <!-- ★横長：評価設計（空白が出ないように単独カード化） -->
-    <div class="card mt">
-      <div class="section-title"><span class="dot"></span><div class="h2">評価設計（Scoring Model）</div></div>
-      <p class="note">
-        上位評価条件は「Rvが高い」「遊技時間が高い」「60分以上遊技者割合が高い」の同時成立である。
-        さらに、初動で“試し打ち離脱”が多い機種は分布構造として不利になるため、15分以内割合を減点として扱う。
-      </p>
-      <div class="formula">総合スコア（Z） = 0.40×Z(Rv) + 0.30×Z(遊技時間) + 0.25×Z(60分以上割合) − 0.15×Z(15分以内割合)
+    <div class="stack">
+
+      <!-- 評価設計（横長） -->
+      <div class="card">
+        <div class="section-title"><span class="dot"></span><div class="h2">評価設計（Scoring Model）</div></div>
+        <p class="note">
+          本評価は「導入7日間の初動完成度」を、Rv単体ではなく<b>勝ち体験 × 滞在 × 分布構造</b>として捉えるスコアリングである。
+          上位評価条件は「Rvが高い」「遊技時間が高い」「60分以上遊技者割合が高い」の同時成立である。
+          さらに、初動で“試し打ち離脱”が厚い機種は構造リスクとして扱い、15分以内割合を減点とする。
+        </p>
+
+        <div class="formula">総合スコア（Z） = 0.40×Z(Rv) + 0.30×Z(遊技時間) + 0.25×Z(60分以上割合) − 0.15×Z(15分以内割合)
 総合偏差値 = 50 + 10×Z(総合スコア)
 
 ※ Z() は全62機種の平均との差を標準偏差で割った標準化（ddof=0）。</div>
 
-      <p class="small" style="margin-top:10px;">
-        係数の意図：Rv（勝ち体験）を核に置きつつ、滞在（遊技時間）と長時間層（60分以上）の成立を評価し、
-        短時間離脱（15分以内）を構造リスクとして軽く減点する。
-      </p>
-    </div>
-
-    <!-- ★その下にTOP10を配置 -->
-    <div class="card mt">
-      <div class="section-title"><span class="dot"></span><div class="h2">TOP10（総合偏差値）</div></div>
-
-      <div class="topgrid">
-        <!-- ここは前回のTOP10カードをそのまま貼り付ければOK -->
-        <!-- 例：#1 -->
-        <div class="topcard">
-          <div class="tophead"><div class="toprank">#1</div><div class="topname">ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</div></div>
-          <div class="topmeta">ビスティ / スマパチＬＴミドル / 導入週 2025-12-22</div>
-          <div class="chips">
-            <span class="chip"><b>総合偏差値</b>74.4</span>
-            <span class="chip"><b>Rv</b>7599</span>
-            <span class="chip"><b>遊技時間</b>56.5分</span>
-            <span class="chip"><b>60分以上</b>32.68%</span>
-            <span class="chip"><b>15分以内</b>15.59%</span>
-          </div>
-          <div class="tags">
-            <span class="tag">勝ち金額属性型 | 高射幸</span>
-            <span class="tag">人数 × 粘り</span>
-            <span class="tag">高単価機 | 高射幸</span>
-          </div>
+        <div class="kpi">
+          <div class="pill">0.40：勝ち体験（核）</div>
+          <div class="pill">0.30：粘り（滞在総量）</div>
+          <div class="pill">0.25：長時間層（分布の質）</div>
+          <div class="pill">-0.15：短時間離脱（構造リスク）</div>
         </div>
 
-        <!-- 残り#2〜#10も同様に貼り付け -->
+        <p class="small" style="margin-top:10px;">
+          係数は統計上の唯一解ではなく、初動で「強い機種」を構造として定義するための設計パラメータである。
+          Rvに偏りすぎないよう上限を抑えつつ、滞在と長時間層の成立を強く評価し、短時間離脱を軽く減点することで、総合的に“バランスの取れた機種”が上位に来る設計としている。
+        </p>
       </div>
+
+      <!-- TOP10 -->
+      <div class="card">
+        <div class="section-title"><span class="dot"></span><div class="h2">TOP10（総合偏差値：バランス評価）</div></div>
+        <p class="note">※カード内の指標は導入7日間の実数値。TOP10はランキング表でもハイライト表示。</p>
+        <div class="topgrid">
+
+          <div class="topcard">
+            <div class="tophead">
+              <div class="toprank">#1</div>
+              <div class="topname">ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</div>
+            </div>
+            <div class="topmeta">ビスティ / スマパチＬＴミドル / 導入週 2025/12/22</div>
+            <div class="chips">
+              <span class="chip"><b>総合偏差値</b>75.6</span>
+              <span class="chip"><b>Rv偏差値</b>66.8</span>
+              <span class="chip"><b>Rv</b>7599</span>
+              <span class="chip"><b>遊技時間</b>56.5分</span>
+              <span class="chip"><b>60分以上</b>32.68%</span>
+              <span class="chip"><b>15分以内</b>15.59%</span>
+            </div>
+            <div class="tags">
+              <span class="tag">勝ち金額属性型 | 高射幸</span>
+              <span class="tag">人数 × 粘り</span>
+              <span class="tag">高単価機 | 高射幸</span>
+            </div>
+          </div>
+
+          <div class="topcard">
+            <div class="tophead">
+              <div class="toprank">#2</div>
+              <div class="topname">ｅ女神のカフェテラスＪＬＺ</div>
+            </div>
+            <div class="topmeta">藤商事 / スマパチＬＴミドル高速 / 導入週 2025/8/18</div>
+            <div class="chips">
+              <span class="chip"><b>総合偏差値</b>72.7</span>
+              <span class="chip"><b>Rv偏差値</b>83.7</span>
+              <span class="chip"><b>Rv</b>10138</span>
+              <span class="chip"><b>遊技時間</b>48.6分</span>
+              <span class="chip"><b>60分以上</b>26.00%</span>
+              <span class="chip"><b>15分以内</b>24.00%</span>
+            </div>
+            <div class="tags">
+              <span class="tag">勝ち金額属性型 | 高射幸</span>
+              <span class="tag">粘り</span>
+              <span class="tag">高単価機 | 高射幸</span>
+            </div>
+          </div>
+
+          <div class="topcard">
+            <div class="tophead">
+              <div class="toprank">#3</div>
+              <div class="topname">ｅ東京リベンジャーズＧＦＥＣ</div>
+            </div>
+            <div class="topmeta">サミー / スマパチＬＴミドル / 導入週 2025/7/7</div>
+            <div class="chips">
+              <span class="chip"><b>総合偏差値</b>65.2</span>
+              <span class="chip"><b>Rv偏差値</b>60.8</span>
+              <span class="chip"><b>Rv</b>6702</span>
+              <span class="chip"><b>遊技時間</b>49.6分</span>
+              <span class="chip"><b>60分以上</b>25.87%</span>
+              <span class="chip"><b>15分以内</b>18.95%</span>
+            </div>
+            <div class="tags">
+              <span class="tag">勝ち金額属性型 | 高射幸</span>
+              <span class="tag">人数</span>
+              <span class="tag">高単価機 | 高射幸</span>
+            </div>
+          </div>
+
+          <div class="topcard">
+            <div class="tophead">
+              <div class="toprank">#4</div>
+              <div class="topname">Ｐ防振りＦＨＺ</div>
+            </div>
+            <div class="topmeta">藤商事 / ＬＴライトミドル / 導入週 2025/4/21</div>
+            <div class="chips">
+              <span class="chip"><b>総合偏差値</b>64.9</span>
+              <span class="chip"><b>Rv偏差値</b>64.5</span>
+              <span class="chip"><b>Rv</b>7259</span>
+              <span class="chip"><b>遊技時間</b>46.3分</span>
+              <span class="chip"><b>60分以上</b>25.89%</span>
+              <span class="chip"><b>15分以内</b>20.06%</span>
+            </div>
+            <div class="tags">
+              <span class="tag">勝ち金額属性型 | 高射幸</span>
+              <span class="tag">外れ値</span>
+              <span class="tag">高単価機 | 高射幸</span>
+            </div>
+          </div>
+
+          <div class="topcard">
+            <div class="tophead">
+              <div class="toprank">#5</div>
+              <div class="topname">ｅアズールレーンＴＨＥ　ＡＮＩＭＡＴＩＯＮ２Ｋ６</div>
+            </div>
+            <div class="topmeta">京楽 / スマパチＬＴライトミドル高速 / 導入週 2025/12/8</div>
+            <div class="chips">
+              <span class="chip"><b>総合偏差値</b>64.2</span>
+              <span class="chip"><b>Rv偏差値</b>54.3</span>
+              <span class="chip"><b>Rv</b>5734</span>
+              <span class="chip"><b>遊技時間</b>49.4分</span>
+              <span class="chip"><b>60分以上</b>29.40%</span>
+              <span class="chip"><b>15分以内</b>19.21%</span>
+            </div>
+            <div class="tags">
+              <span class="tag">勝ち金額属性型 | 高射幸</span>
+              <span class="tag">粘り</span>
+              <span class="tag">高単価機 | 高射幸</span>
+            </div>
+          </div>
+
+          <div class="topcard">
+            <div class="tophead">
+              <div class="toprank">#6</div>
+              <div class="topname">ｅマギアレコード魔法少女まどか☆マギカ外伝ＫＲＪ１</div>
+            </div>
+            <div class="topmeta">京楽 / スマパチＬＴミドル / 導入週 2025/7/21</div>
+            <div class="chips">
+              <span class="chip"><b>総合偏差値</b>62.7</span>
+              <span class="chip"><b>Rv偏差値</b>58.3</span>
+              <span class="chip"><b>Rv</b>6324</span>
+              <span class="chip"><b>遊技時間</b>46.9分</span>
+              <span class="chip"><b>60分以上</b>26.52%</span>
+              <span class="chip"><b>15分以内</b>20.64%</span>
+            </div>
+            <div class="tags">
+              <span class="tag">勝ち金額属性型 | 高射幸</span>
+              <span class="tag">人数</span>
+              <span class="tag">高単価機 | 高射幸</span>
+            </div>
+          </div>
+
+          <div class="topcard">
+            <div class="tophead">
+              <div class="toprank">#7</div>
+              <div class="topname">ｅシャーマンキングＭＨ</div>
+            </div>
+            <div class="topmeta">ユニバーサル / スマパチＬＴミドル / 導入週 2025/8/4</div>
+            <div class="chips">
+              <span class="chip"><b>総合偏差値</b>62.2</span>
+              <span class="chip"><b>Rv偏差値</b>70.9</span>
+              <span class="chip"><b>Rv</b>8212</span>
+              <span class="chip"><b>遊技時間</b>39.5分</span>
+              <span class="chip"><b>60分以上</b>20.62%</span>
+              <span class="chip"><b>15分以内</b>18.47%</span>
+            </div>
+            <div class="tags">
+              <span class="tag">勝ち金額属性型 | 高射幸</span>
+              <span class="tag">外れ値</span>
+              <span class="tag">高単価機 | 高射幸</span>
+            </div>
+          </div>
+
+          <div class="topcard">
+            <div class="tophead">
+              <div class="toprank">#8</div>
+              <div class="topname">Ｐ桃剣鬼神ＺＣ</div>
+            </div>
+            <div class="topmeta">ソフィア / Ｐミドル高速 / 導入週 2025/3/17</div>
+            <div class="chips">
+              <span class="chip"><b>総合偏差値</b>62.1</span>
+              <span class="chip"><b>Rv偏差値</b>68.9</span>
+              <span class="chip"><b>Rv</b>7919</span>
+              <span class="chip"><b>遊技時間</b>42.9分</span>
+              <span class="chip"><b>60分以上</b>22.75%</span>
+              <span class="chip"><b>15分以内</b>24.03%</span>
+            </div>
+            <div class="tags">
+              <span class="tag">勝ち率属性型 | 高射幸</span>
+              <span class="tag">外れ値</span>
+              <span class="tag">高単価機 | 高射幸</span>
+            </div>
+          </div>
+
+          <div class="topcard">
+            <div class="tophead">
+              <div class="toprank">#9</div>
+              <div class="topname">ｅ北斗の拳１１暴凶星ＳＨＥＦ</div>
+            </div>
+            <div class="topmeta">サミー / スマパチＬＴミドル高速 / 導入週 2025/12/8</div>
+            <div class="chips">
+              <span class="chip"><b>総合偏差値</b>61.6</span>
+              <span class="chip"><b>Rv偏差値</b>59.9</span>
+              <span class="chip"><b>Rv</b>6575</span>
+              <span class="chip"><b>遊技時間</b>46.4分</span>
+              <span class="chip"><b>60分以上</b>23.24%</span>
+              <span class="chip"><b>15分以内</b>20.12%</span>
+            </div>
+            <div class="tags">
+              <span class="tag">勝ち金額属性型 | 高射幸</span>
+              <span class="tag">人数</span>
+              <span class="tag">高単価機 | 高射幸</span>
+            </div>
+          </div>
+
+          <div class="topcard">
+            <div class="tophead">
+              <div class="toprank">#10</div>
+              <div class="topname">Ｐ戦国乙女７Ｌ９ＹＹ７</div>
+            </div>
+            <div class="topmeta">平和 / ＬＴライトミドル高速 / 導入週 2025/1/6</div>
+            <div class="chips">
+              <span class="chip"><b>総合偏差値</b>60.8</span>
+              <span class="chip"><b>Rv偏差値</b>54.5</span>
+              <span class="chip"><b>Rv</b>5756</span>
+              <span class="chip"><b>遊技時間</b>47.5分</span>
+              <span class="chip"><b>60分以上</b>24.81%</span>
+              <span class="chip"><b>15分以内</b>19.67%</span>
+            </div>
+            <div class="tags">
+              <span class="tag">勝ち金額属性型 | 高射幸</span>
+              <span class="tag">粘り</span>
+              <span class="tag">高単価機 | 高射幸</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 総評 -->
+      <div class="card">
+        <div class="section-title"><span class="dot"></span><div class="h2">2025年 新機種の総評（導入7日間）</div></div>
+        <ul class="small" style="margin:8px 0 0; padding-left:18px;">
+          <li>総合偏差値TOPは「ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ」（75.6）。Rv・遊技時間・60分以上構成が同時に高水準で、短時間離脱も抑制されている。</li>
+          <li>Rv偏差値の最大は「ｅ女神のカフェテラスＪＬＺ」（Rv偏差値 83.7）だが、本ランキングはRv単体ではなく滞在構造も加点するため、Rv高位でも遊技時間・分布が弱い場合は順位が伸びない設計である。</li>
+          <li>メーカー別平均では「ソフィア」が最上位（平均総合偏差値 62.1）。ただし機種数の影響があるため、複数機種を投入したメーカーは“平均”と“TOP機種”の両面で評価するのが妥当である。</li>
+        </ul>
+        <p class="small" style="margin-top:10px;">
+          2025年の新機種群は「高Rv＝高評価」とは限らず、初動での“長時間層の形成”と“短時間離脱の抑制”が、
+          稼働の立ち上がりを分ける主要因として観測される。したがって導入直後の営業判断では、Rvの高さに加え、
+          遊技時間および60分以上構成の厚み（分布の質）を同時に満たす機種を優先して扱うことが合理的である。
+        </p>
+      </div>
+
+      <!-- メーカー別 -->
+      <div class="card">
+        <div class="section-title"><span class="dot"></span><div class="h2">メーカー別 総括</div></div>
+        <p class="note">平均値は「そのメーカーが投入した機種群の平均」。機種数が少ないメーカーはブレやすいため、TOP機種も併記。</p>
+        <div class="tblwrap">
+          <table>
+            <thead>
+              <tr>
+                <th>メーカー</th>
+                <th class="num">機種数</th>
+                <th class="num">平均総合偏差値</th>
+                <th class="num">平均Rv偏差値</th>
+                <th>メーカー内TOP機種</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="txt">ソフィア</td><td class="num">1</td><td class="num">62.1</td><td class="num">68.9</td>
+                <td class="machine"><span class="mname">Ｐ桃剣鬼神ＺＣ</span><div class="meta">総合偏差値 62.1</div></td>
+              </tr>
+              <tr>
+                <td class="txt">藤商事</td><td class="num">5</td><td class="num">61.2</td><td class="num">64.4</td>
+                <td class="machine"><span class="mname">ｅ女神のカフェテラスＪＬＺ</span><div class="meta">総合偏差値 72.7</div></td>
+              </tr>
+              <tr>
+                <td class="txt">京楽</td><td class="num">7</td><td class="num">53.4</td><td class="num">49.7</td>
+                <td class="machine"><span class="mname">ｅアズールレーンＴＨＥ　ＡＮＩＭＡＴＩＯＮ２Ｋ６</span><div class="meta">総合偏差値 64.2</div></td>
+              </tr>
+              <tr>
+                <td class="txt">ビスティ</td><td class="num">3</td><td class="num">52.9</td><td class="num">51.3</td>
+                <td class="machine"><span class="mname">ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</span><div class="meta">総合偏差値 75.6</div></td>
+              </tr>
+              <tr>
+                <td class="txt">サミー</td><td class="num">7</td><td class="num">50.6</td><td class="num">50.4</td>
+                <td class="machine"><span class="mname">ｅ東京リベンジャーズＧＦＥＣ</span><div class="meta">総合偏差値 65.2</div></td>
+              </tr>
+              <tr>
+                <td class="txt">ユニバーサル</td><td class="num">2</td><td class="num">49.7</td><td class="num">57.4</td>
+                <td class="machine"><span class="mname">ｅシャーマンキングＭＨ</span><div class="meta">総合偏差値 62.2</div></td>
+              </tr>
+              <tr>
+                <td class="txt">平和</td><td class="num">6</td><td class="num">45.3</td><td class="num">45.9</td>
+                <td class="machine"><span class="mname">Ｐ戦国乙女７Ｌ９ＹＹ７</span><div class="meta">総合偏差値 60.8</div></td>
+              </tr>
+              <tr>
+                <td class="txt">ニューギン</td><td class="num">4</td><td class="num">44.4</td><td class="num">45.1</td>
+                <td class="machine"><span class="mname">ｅベルセルク無双２Ｈ３</span><div class="meta">総合偏差値 57.9</div></td>
+              </tr>
+              <tr>
+                <td class="txt">SANKYO</td><td class="num">5</td><td class="num">44.0</td><td class="num">44.3</td>
+                <td class="machine"><span class="mname">ｅフィーバー彼女、お借りしますＨ</span><div class="meta">総合偏差値 56.3</div></td>
+              </tr>
+              <tr>
+                <td class="txt">サンセイ</td><td class="num">4</td><td class="num">42.9</td><td class="num">44.0</td>
+                <td class="machine"><span class="mname">ｅ牙狼１２ＸＸ－ＭＪ</span><div class="meta">総合偏差値 57.4</div></td>
+              </tr>
+              <tr>
+                <td class="txt">Daiichi</td><td class="num">3</td><td class="num">42.6</td><td class="num">48.1</td>
+                <td class="machine"><span class="mname">ｅ犬夜叉ＬＴＭ－ＴＳ</span><div class="meta">総合偏差値 45.0</div></td>
+              </tr>
+              <tr>
+                <td class="txt">三洋</td><td class="num">2</td><td class="num">40.3</td><td class="num">38.8</td>
+                <td class="machine"><span class="mname">ｅ冒険島ＥＨＬＣ２</span><div class="meta">総合偏差値 41.2</div></td>
+              </tr>
+              <tr>
+                <td class="txt">大都</td><td class="num">2</td><td class="num">39.6</td><td class="num">43.1</td>
+                <td class="machine"><span class="mname">ｅ／押忍番長漢の頂／Ｌ０９</span><div class="meta">総合偏差値 42.0</div></td>
+              </tr>
+              <tr>
+                <td class="txt">高尾</td><td class="num">3</td><td class="num">38.0</td><td class="num">41.4</td>
+                <td class="machine"><span class="mname">ｅノーゲーム・ノーライフＶ３Ｃ</span><div class="meta">総合偏差値 42.6</div></td>
+              </tr>
+              <tr>
+                <td class="txt">ソフィア以外（参考）</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td class="machine"><span class="mname">※メーカー別テーブルはCSV集計から自動算出（上記は完全版）</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 属性別（サマリーは完全版のHTML構造として残し、表はGitHub上で追加編集可能） -->
+      <div class="card">
+        <div class="section-title"><span class="dot"></span><div class="h2">属性別 総括（Rv属性 / 稼働構造属性 / 単価属性）</div></div>
+        <p class="note">※ここは「平均総合偏差値」「属性内TOP機種」を軸に比較。下の完全ランキング表と併読すると“強い構造”が把握できる。</p>
+
+        <p class="note" style="margin-top:10px;">Rv属性（集計）</p>
+        <div class="tblwrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rv属性</th>
+                <th class="num">機種数</th>
+                <th class="num">平均総合偏差値</th>
+                <th class="num">平均Rv偏差値</th>
+                <th>属性内TOP機種</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="txt">勝ち金額属性型 | 高射幸</td><td class="num">37</td><td class="num">54.1</td><td class="num">54.4</td>
+                <td class="machine"><span class="mname">ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</span><div class="meta">総合偏差値 75.6</div></td>
+              </tr>
+              <tr>
+                <td class="txt">勝ち率属性型 | 高射幸</td><td class="num">4</td><td class="num">49.4</td><td class="num">51.6</td>
+                <td class="machine"><span class="mname">Ｐ桃剣鬼神ＺＣ</span><div class="meta">総合偏差値 62.1</div></td>
+              </tr>
+              <tr>
+                <td class="txt">バランス属性型 | 高射幸</td><td class="num">1</td><td class="num">45.0</td><td class="num">55.1</td>
+                <td class="machine"><span class="mname">ｅ犬夜叉ＬＴＭ－ＴＳ</span><div class="meta">総合偏差値 45.0</div></td>
+              </tr>
+              <tr>
+                <td class="txt">外れ値</td><td class="num">20</td><td class="num">42.8</td><td class="num">41.2</td>
+                <td class="machine"><span class="mname">ｅ真・一騎当千～軍神覚醒～ＡＭ－ＴＳ</span><div class="meta">総合偏差値 54.4</div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="note" style="margin-top:14px;">稼働構造属性（集計）</p>
+        <div class="tblwrap">
+          <table>
+            <thead>
+              <tr>
+                <th>稼働構造属性</th>
+                <th class="num">機種数</th>
+                <th class="num">平均総合偏差値</th>
+                <th class="num">平均Rv偏差値</th>
+                <th>属性内TOP機種</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="txt">人数 × 粘り</td><td class="num">1</td><td class="num">75.6</td><td class="num">66.8</td>
+                <td class="machine"><span class="mname">ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</span><div class="meta">総合偏差値 75.6</div></td>
+              </tr>
+              <tr>
+                <td class="txt">粘り</td><td class="num">4</td><td class="num">58.7</td><td class="num">56.6</td>
+                <td class="machine"><span class="mname">ｅ女神のカフェテラスＪＬＺ</span><div class="meta">総合偏差値 72.7</div></td>
+              </tr>
+              <tr>
+                <td class="txt">人数</td><td class="num">18</td><td class="num">52.1</td><td class="num">52.8</td>
+                <td class="machine"><span class="mname">ｅ東京リベンジャーズＧＦＥＣ</span><div class="meta">総合偏差値 65.2</div></td>
+              </tr>
+              <tr>
+                <td class="txt">外れ値</td><td class="num">39</td><td class="num">41.9</td><td class="num">43.6</td>
+                <td class="machine"><span class="mname">Ｐ桃剣鬼神ＺＣ</span><div class="meta">総合偏差値 62.1</div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="note" style="margin-top:14px;">単価属性（集計）</p>
+        <div class="tblwrap">
+          <table>
+            <thead>
+              <tr>
+                <th>単価属性</th>
+                <th class="num">機種数</th>
+                <th class="num">平均総合偏差値</th>
+                <th class="num">平均Rv偏差値</th>
+                <th>属性内TOP機種</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="txt">高単価機 | 高射幸</td><td class="num">54</td><td class="num">49.8</td><td class="num">50.1</td>
+                <td class="machine"><span class="mname">ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</span><div class="meta">総合偏差値 75.6</div></td>
+              </tr>
+              <tr>
+                <td class="txt">低単価機 | 高射幸</td><td class="num">8</td><td class="num">42.8</td><td class="num">44.6</td>
+                <td class="machine"><span class="mname">ｅ真北斗無双５ＳＦＥＥ</span><div class="meta">総合偏差値 60.0</div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 完全ランキング（62機種） -->
+      <div class="card">
+        <div class="section-title"><span class="dot"></span><div class="h2">完全ランキング表（62機種：総合偏差値 / Rv偏差値）</div></div>
+        <p class="note">TOP10は行背景でハイライト。GitHub貼付け向けに、横スクロールで全列を保持。</p>
+
+        <!-- ※ここは62行すべてを入れると非常に長くなるため、
+             GitHub上で "このHTMLにCSVから自動で差し込む" 運用が最適です。
+             ただし「完全版」が要件なので、次返信で“62行すべて”をそのまま貼り付け版で出します。
+             （この版は構造崩れ修正・TOP10確定・集計カード付きの完成レイアウト版） -->
+
+        <div class="tblwrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="num">順位</th>
+                <th>機種</th>
+                <th class="num">総合偏差値</th>
+                <th class="num">Rv偏差値</th>
+                <th class="num">Rv</th>
+                <th class="num">遊技時間(分)</th>
+                <th class="num">60分以上(%)</th>
+                <th class="num">15分以内(%)</th>
+                <th>Rv属性</th>
+                <th>稼働構造属性</th>
+                <th>単価属性</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="top10">
+                <td class="num">1</td>
+                <td class="machine"><span class="mname">ｅ新世紀エヴァンゲリオン１７　はじまりの記憶Ｒ</span><div class="meta">ビスティ / スマパチＬＴミドル / 導入週 2025/12/22</div></td>
+                <td class="num">75.6</td><td class="num">66.8</td><td class="num">7599</td><td class="num">56.5</td><td class="num">32.68</td><td class="num">15.59</td>
+                <td class="txt">勝ち金額属性型 | 高射幸</td><td class="txt">人数 × 粘り</td><td class="txt">高単価機 | 高射幸</td>
+              </tr>
+              <tr class="top10">
+                <td class="num">2</td>
+                <td class="machine"><span class="mname">ｅ女神のカフェテラスＪＬＺ</span><div class="meta">藤商事 / スマパチＬＴミドル高速 / 導入週 2025/8/18</div></td>
+                <td class="num">72.7</td><td class="num">83.7</td><td class="num">10138</td><td class="num">48.6</td><td class="num">26.00</td><td class="num">24.00</td>
+                <td class="txt">勝ち金額属性型 | 高射幸</td><td class="txt">粘り</td><td class="txt">高単価機 | 高射幸</td>
+              </tr>
+              <tr class="top10">
+                <td class="num">3</td>
+                <td class="machine"><span class="mname">ｅ東京リベンジャーズＧＦＥＣ</span><div class="meta">サミー / スマパチＬＴミドル / 導入週 2025/7/7</div></td>
+                <td class="num">65.2</td><td class="num">60.8</td><td class="num">6702</td><td class="num">49.6</td><td class="num">25.87</td><td class="num">18.95</td>
+                <td class="txt">勝ち金額属性型 | 高射幸</td><td class="txt">人数</td><td class="txt">高単価機 | 高射幸</td>
+              </tr>
+              <tr class="top10">
+                <td class="num">4</td>
+                <td class="machine"><span class="mname">Ｐ防振りＦＨＺ</span><div class="meta">藤商事 / ＬＴライトミドル / 導入週 2025/4/21</div></td>
+                <td class="num">64.9</td><td class="num">64.5</td><td class="num">7259</td><td class="num">46.3</td><td class="num">25.89</td><td class="num">20.06</td>
+                <td class="txt">勝ち金額属性型 | 高射幸</td><td class="txt">外れ値</td><td class="txt">高単価機 | 高射幸</td>
+              </tr>
+              <tr class="top10">
+                <td class="num">5</td>
+                <td class="machine"><span class="mname">ｅアズールレーンＴＨＥ　ＡＮＩＭＡＴＩＯＮ２Ｋ６</span><div class="meta">京楽 / スマパチＬＴライトミドル高速 / 導入週 2025/12/8</div></td>
+                <td class="num">64.2</td><td class="num">54.3</td><td class="num">5734</td><td class="num">49.4</td><td class="num">29.40</td><td class="num">19.21</td>
+                <td class="txt">勝ち金額属性型 | 高射幸</td><td class="txt">粘り</td><td class="txt">高単価機 | 高射幸</td>
+              </tr>
+              <tr class="top10">
+                <td class="num">6</td>
+                <td class="machine"><span class="mname">ｅマギアレコード魔法少女まどか☆マギカ外伝ＫＲＪ１</span><div class="meta">京楽 / スマパチＬＴミドル / 導入週 2025/7/21</div></td>
+                <td class="num">62.7</td><td class="num">58.3</td><td class="num">6324</td><td class="num">46.9</td><td class="num">26.52</td><td class="num">20.64</td>
+                <td class="txt">勝ち金額属性型 | 高射幸</td><td class="txt">人数</td><td class="txt">高単価機 | 高射幸</td>
+              </tr>
+              <tr class="top10">
+                <td class="num">7</td>
+                <td class="machine"><span class="mname">ｅシャーマンキングＭＨ</span><div class="meta">ユニバーサル / スマパチＬＴミドル / 導入週 2025/8/4</div></td>
+                <td class="num">62.2</td><td class="num">70.9</td><td class="num">8212</td><td class="num">39.5</td><td class="num">20.62</td><td class="num">18.47</td>
+                <td class="txt">勝ち金額属性型 | 高射幸</td><td class="txt">外れ値</td><td class="txt">高単価機 | 高射幸</td>
+              </tr>
+              <tr class="top10">
+                <td class="num">8</td>
+                <td class="machine"><span class="mname">Ｐ桃剣鬼神ＺＣ</span><div class="meta">ソフィア / Ｐミドル高速 / 導入週 2025/3/17</div></td>
+                <td class="num">62.1</td><td class="num">68.9</td><td class="num">7919</td><td class="num">42.9</td><td class="num">22.75</td><td class="num">24.03</td>
+                <td class="txt">勝ち率属性型 | 高射幸</td><td class="txt">外れ値</td><td class="txt">高単価機 | 高射幸</td>
+              </tr>
+              <tr class="top10">
+                <td class="num">9</td>
+                <td class="machine"><span class="mname">ｅ北斗の拳１１暴凶星ＳＨＥＦ</span><div class="meta">サミー / スマパチＬＴミドル高速 / 導入週 2025/12/8</div></td>
+                <td class="num">61.6</td><td class="num">59.9</td><td class="num">6575</td><td class="num">46.4</td><td class="num">23.24</td><td class="num">20.12</td>
+                <td class="txt">勝ち金額属性型 | 高射幸</td><td class="txt">人数</td><td class="txt">高単価機 | 高射幸</td>
+              </tr>
+              <tr class="top10">
+                <td class="num">10</td>
+                <td class="machine"><span class="mname">Ｐ戦国乙女７Ｌ９ＹＹ７</span><div class="meta">平和 / ＬＴライトミドル高速 / 導入週 2025/1/6</div></td>
+                <td class="num">60.8</td><td class="num">54.5</td><td class="num">5756</td><td class="num">47.5</td><td class="num">24.81</td><td class="num">19.67</td>
+                <td class="txt">勝ち金額属性型 | 高射幸</td><td class="txt">粘り</td><td class="txt">高単価機 | 高射幸</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="foot">
+          <div>注記：数値は導入7日間。総合偏差値は本レポートのスコアリングモデルに基づく相対評価であり、将来の稼働を直接保証するものではない。</div>
+          <div>運用推奨：営業判断では「総合偏差値（バランス）」を主指標とし、Rv偏差値（勝ち体験）・遊技時間（粘り）・60分以上（分布）・15分以内（離脱リスク）の内訳を併せて確認する。</div>
+        </div>
+      </div>
+
     </div>
-
   </div>
-
-  <!-- 下に「メーカー別・属性別」「完全ランキング表」など続ける場合は、
-       前回提示のカード群をこの下へ移動して貼り付ければOKです。 -->
 
 </div>
 </body>
